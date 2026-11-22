@@ -313,9 +313,21 @@ function watchPlan(rec) {
 
 /* ---------------------------------------------------------------- sound, generated in the browser */
 const Sound = (() => {
-  let ctx, master, user, wakeBus, layers = [], wakeT = [], bpm = 60, dead = false; const bufs = {};
+  let ctx, master, user, wakeBus, layers = [], wakeT = [], bpm = 60, dead = false, hush; const bufs = {};
+  // iPhone treats web sound as 'ambient', so the silent switch mutes it at any volume. Asking for the 'playback' session (iOS 17+) lifts that;
+  // on older iOS a looping silent <audio> element moves web sound to the media channel instead.
+  const SILENT = (() => { const n = 4000, b = new Uint8Array(44 + n), v = new DataView(b.buffer), w = (o, t) => { for (let i = 0; i < t.length; i++) b[o + i] = t.charCodeAt(i); };
+    w(0, 'RIFF'); v.setUint32(4, 36 + n, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true);
+    v.setUint16(32, 1, true); v.setUint16(34, 8, true); w(36, 'data'); v.setUint32(40, n, true); b.fill(128, 44);
+    let t = ''; for (let i = 0; i < b.length; i++) t += String.fromCharCode(b[i]); return 'data:audio/wav;base64,' + btoa(t); })();
+  function unmute() {
+    try { if (navigator.audioSession) { if (navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; return; } } catch (e) {}
+    if (!/iP(hone|ad|od)/.test(navigator.userAgent)) return;
+    try { if (!hush) { hush = new Audio(SILENT); hush.loop = true; hush.setAttribute('playsinline', ''); } if (hush.paused) hush.play().catch(() => {}); } catch (e) {}
+  }
   function ensure() {
     if (dead) return false;
+    unmute();
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) { dead = true; return false; }
       try {
@@ -325,7 +337,7 @@ const Sound = (() => {
         const keep = ctx.createOscillator(), kg = ctx.createGain(); kg.gain.value = 0; keep.connect(kg); kg.connect(master); kg.connect(wakeBus); keep.start();   // keeps both buses rendering while nothing plays
       } catch (e) { dead = true; ctx = null; return false; }
     }
-    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    if (ctx.state !== 'running') ctx.resume().catch(() => {});
     return true;
   }
   function noise(type) {
@@ -379,6 +391,7 @@ const Sound = (() => {
   function drive(param, env, list) { const cur = env.go(list); if (!param) return; const t = ctx.currentTime; param.cancelScheduledValues(t); param.setValueAtTime(cur, t); let lv = cur;
     list.forEach(([sec, v]) => { if (v === lv) param.setValueAtTime(v, t + sec); else param.linearRampToValueAtTime(v, t + sec); lv = v; }); }
   return {
+    unlock() { unmute(); if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); },
     start(map) { if (!ensure()) return false; stopLayers(); bpm = 60; for (const k in map) { const L = make[k](); L.key = k; L.out.gain.value = map[k]; L.out.connect(master); layers.push(L); } return true; },
     morph(map, sec = 1.5) { if (!ensure()) return; const t = ctx.currentTime, keep = [];
       layers.forEach(L => { if (map[L.key] != null) { L.out.gain.setTargetAtTime(map[L.key], t, sec / 4); keep.push(L); } else { L.out.gain.setTargetAtTime(0, t, sec / 4); setTimeout(() => kill([L]), sec * 1000 + 400); } });
@@ -595,6 +608,7 @@ function sleep() {
     <ol class="log" id="log" aria-live="polite"></ol>
     <div class="ctl" id="ctl"></div>
     <label class="vol" for="vol">소리 크기<input id="vol" type="range" min="0" max="100" value="${Math.round(S.settings.volume * 100)}"></label>
+    <p class="small" style="text-align:center;opacity:.75">소리가 안 들리면 무음 모드를 끄고 볼륨을 올려 주세요.</p>
   </section>`;
   $('#log').innerHTML = sess.log.slice(-4).map(e => `<li><i>${sess.log.indexOf(e) + 1}</i><time>${e.label}</time><span>${esc(e.text)}</span></li>`).join('');
   paintSleep();
@@ -755,6 +769,7 @@ function about() {
   <div class="card"><h3>알아 둘 점</h3>
     <ul class="acts">
       <li><div><strong>화면을 켜 둔 채 충전기에 연결해 주세요</strong><span>웹에서는 화면이 꺼지면 기상 소리가 울리지 않을 수 있습니다. 수면 화면은 20초 뒤 스스로 어두워집니다.</span></div></li>
+      <li><div><strong>무음 모드에서도 소리가 나게 고쳤습니다</strong><span>2026.11.23 업데이트. 그래도 안 들리면 무음 모드를 끄고 볼륨을 올려 주세요.</span></div></li>
       <li><div><strong>소리는 모두 이 기기에서 만들어집니다</strong><span>빗소리, 파도, 브라운 노이즈, 핑크 노이즈, 바람, 느린 앰비언트 여섯 가지입니다.</span></div></li>
       <li><div><strong>기록은 이 브라우저에만 남습니다</strong><span>가입이 없고 서버로 보내지 않습니다. 다른 기기에서는 보이지 않습니다.</span></div></li>
       <li><div><strong>치료나 진단을 하지 않습니다</strong><span>수면 습관을 돕는 도구입니다. 잠을 못 자는 날이 길게 이어지면 의료기관과 상담해 주세요.</span></div></li>
@@ -808,6 +823,7 @@ document.addEventListener('input', e => {
   else if (t.id === 'endTime' && C) C.end = t.value; else if (t.id === 'wakeTime' && C) C.wake = t.value;
 });
 document.addEventListener('visibilitychange', () => { if (sess && !document.hidden) tick(); });
+['pointerdown', 'touchend', 'keydown'].forEach(ev => document.addEventListener(ev, () => Sound.unlock(), { passive: true }));
 
 window.sleeponPlan = () => ({ plan: watchPlan(WATCH), resp: RESP, watch: WATCH });   // read-only, used to draw the same result elsewhere
 const h0 = location.hash.replace('#', '');

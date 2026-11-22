@@ -49,6 +49,7 @@ main > *{flex-shrink:0}
 .tabs a[aria-current="page"]{color:var(--moon);font-weight:600}
 .app[data-view="sleep"] .tabs,.app[data-view="sleep"] .top{display:none}
 .app[data-tone="dawn"] .tabs{display:none}
+.app[data-view="check"] .tabs,.app[data-view="check"] .top,.app[data-view="morning"] .top{display:none}
 
 h1{font-family:var(--display);font-weight:500;font-size:clamp(29px,8.4vw,37px);line-height:1.28;letter-spacing:-.01em;text-wrap:balance}
 h2{font-family:var(--display);font-weight:500;font-size:22px;line-height:1.35;text-wrap:balance}
@@ -98,6 +99,34 @@ input[type="range"]{width:100%;accent-color:var(--moon)}
 .acts li{display:grid;grid-template-columns:22px 1fr;gap:8px}
 .acts li::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--key);margin-top:8px}
 .acts strong{font-weight:600} .acts span{display:block;font-size:13.5px;color:var(--sub)}
+
+/* 10초 체크: one question per screen */
+.qwrap{flex:1;display:flex;flex-direction:column;gap:24px;padding-top:8px}
+.qbar{display:flex;align-items:center;gap:12px}
+.qbar .back{width:44px;height:44px;margin-left:-10px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--sub);flex:none}
+.bars{flex:1;display:grid;gap:6px}
+.bars i{height:4px;border-radius:2px;background:var(--edge)} .bars i.on{background:var(--key)}
+.qcount{font-size:13px;color:var(--sub);min-width:32px;text-align:right}
+.q{display:flex;flex-direction:column;gap:8px} .q h2{font-size:27px;line-height:1.32}
+.opts,.tcards{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;text-align:left;padding:18px;border-radius:18px;border:1px solid var(--edge);background:var(--card)}
+.opt strong{display:block;font-size:17px;font-weight:600;margin-bottom:2px} .opt span{font-size:13.5px;color:var(--sub);line-height:1.4}
+.opt .dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--edge);flex:none;display:flex;align-items:center;justify-content:center}
+.opt[aria-pressed="true"]{border:2px solid var(--key);background:var(--pick);padding:17px}
+.opt[aria-pressed="true"] .dot{background:var(--key);border-color:var(--key)}
+.opt[aria-pressed="true"] .dot::after{content:'';width:9px;height:5px;margin-top:-2px;border-left:2.5px solid var(--key-ink);border-bottom:2.5px solid var(--key-ink);transform:rotate(-45deg)}
+.tcard{display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:18px;border:1px solid var(--edge);background:var(--card)}
+.tcard .ic{width:44px;height:44px;border-radius:12px;background:var(--pick);display:flex;align-items:center;justify-content:center;flex:none}
+.tcard label{flex:1;display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--sub);font-weight:500}
+.tcard input[type="time"]{border:0;background:transparent;padding:0;min-height:38px;font-size:25px;color:var(--fg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid2 button{min-height:64px;border-radius:16px;border:1px solid var(--edge);background:var(--card);font-size:17px}
+.grid2 button[aria-pressed="true"]{border:2px solid var(--key);background:var(--pick);font-weight:600}
+.opts.tight{gap:8px} .opts.tight .opt{padding:13px 16px} .opts.tight .opt[aria-pressed="true"]{padding:12px 15px}
+.actq{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:18px;border:1px solid var(--edge);background:var(--card)}
+.actq strong{font-size:16px;font-weight:600}
+.hello{font-size:13px;color:var(--sub);white-space:nowrap}
+.qfoot{margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:8px}
 
 /* sleep screen */
 .sleep{display:flex;flex-direction:column;gap:14px;flex:1;padding-top:26px}
@@ -464,20 +493,40 @@ function home() {
 }
 
 function check() {
-  if (!C) { const n = new Date(), late = n.getHours() >= 17; C = { tension: 1, fatigue: 1, end: late ? fromMin(Math.ceil((n.getHours() * 60 + n.getMinutes()) / 10) * 10) : '22:00', wake: S.settings.wake, baseline: S.baseline }; }
-  const seg = (name, val) => `<div class="seg">${LEVEL.map((l, i) => `<button type="button" data-act="set" data-k="${name}" data-v="${i}" aria-pressed="${val === i}">${l}</button>`).join('')}</div>`;
+  if (!C) { const n = new Date(), late = n.getHours() >= 17; C = { step: 0, tension: 1, fatigue: 1, end: late ? fromMin(Math.ceil((n.getHours() * 60 + n.getMinutes()) / 10) * 10) : '22:00', wake: S.settings.wake, baseline: S.baseline }; }
+  // one question per screen; the last question (평소 잠드는 시간) is asked only once
+  const Q = ['tension', 'fatigue', 'time'].concat(S.baseline == null ? ['baseline'] : []);
+  C.step = clamp(C.step || 0, 0, Q.length - 1);
+  const q = Q[C.step], lastQ = C.step === Q.length - 1;
+  const opts = (name, list) => `<div class="opts">${list.map(([l, d], i) => `<button type="button" class="opt" data-act="set" data-k="${name}" data-v="${i}" aria-pressed="${C[name] === i}"><span><strong>${l}</strong>${d}</span><i class="dot" aria-hidden="true"></i></button>`).join('')}</div>`;
+  const moon = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8EA0FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+  const sun = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFD88A" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  const body = {
+    tension: { t: '지금 마음은<br>얼마나 바쁜가요?', s: '오늘 밤 소리를 고르는 데 써요', h: opts('tension', [['차분해요', '별생각 없이 누울 수 있어요'], ['보통이에요', '조금 신경 쓰이는 일이 있어요'], ['생각이 많아요', '머릿속이 계속 돌아가요']]) },
+    fatigue: { t: '몸은 얼마나<br>피곤한가요?', s: '오늘 하루를 떠올려 보세요', h: opts('fatigue', [['괜찮아요', '아직 몸이 가벼워요'], ['조금 피곤해요', '눕고 싶은 정도예요'], ['많이 피곤해요', '바로 잠들 수 있을 것 같아요']]) },
+    time: { t: '오늘 밤과<br>내일 아침 시각', s: '눕기 좋은 시각을 계산해요', h: `<div class="tcards">
+      <div class="tcard"><span class="ic">${moon}</span><label for="endTime">오늘 일정이 끝나는 시각<input id="endTime" type="time" value="${C.end}"></label></div>
+      <div class="tcard"><span class="ic">${sun}</span><label for="wakeTime">내일 일어날 시각<input id="wakeTime" type="time" value="${C.wake}"></label></div>
+      <p class="small" style="text-align:center">시각을 눌러 바꿀 수 있어요</p></div>` },
+    baseline: { t: '평소 잠드는 데<br>얼마나 걸리나요?', s: '누운 뒤 잠들기까지의 시간이에요', h: `<span class="tag">처음 한 번만 물어요</span>
+      <div class="grid2">${LAT.map(([v, l]) => `<button type="button" data-act="set" data-k="baseline" data-v="${v}" aria-pressed="${C.baseline === v}">${l}</button>`).join('')}</div>` },
+  }[q];
+  const ready = q !== 'baseline' || C.baseline != null;
   view.innerHTML = `
-  <section class="stack" style="padding-top:8px"><h2>10초 체크</h2><p class="small">네 가지만 답하면 오늘 밤 루틴을 만듭니다.</p></section>
-  <fieldset><legend>지금 긴장도</legend>${seg('tension', C.tension)}</fieldset>
-  <fieldset><legend>지금 피로도</legend>${seg('fatigue', C.fatigue)}</fieldset>
-  <div class="times">
-    <label for="endTime">오늘 일정이 끝나는 시각<input id="endTime" type="time" value="${C.end}"></label>
-    <label for="wakeTime">내일 일어날 시각<input id="wakeTime" type="time" value="${C.wake}"></label>
-  </div>
-  ${S.baseline == null ? `<fieldset><legend>평소 잠드는 데 걸리는 시간 <span class="small">(처음 한 번만 묻습니다)</span></legend>
-    <div class="seg six">${LAT.map(([v, l]) => `<button type="button" data-act="set" data-k="baseline" data-v="${v}" aria-pressed="${C.baseline === v}">${l}</button>`).join('')}</div></fieldset>` : ''}
-  <button class="btn" data-act="makeRoutine" ${C.baseline == null ? 'disabled' : ''}>오늘 밤 루틴 만들기</button>
-  <button class="link" data-act="home">처음으로</button>`;
+  <section class="qwrap">
+    <div class="qbar">
+      <button type="button" class="back" data-act="qBack" aria-label="${C.step ? '이전 질문' : '처음으로'}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="bars" style="grid-template-columns:repeat(${Q.length},1fr)" aria-hidden="true">${Q.map((_, i) => `<i class="${i <= C.step ? 'on' : ''}"></i>`).join('')}</div>
+      <span class="qcount">${C.step + 1}/${Q.length}</span>
+    </div>
+    <div class="q"><h2>${body.t}</h2><p class="small">${body.s}</p></div>
+    ${body.h}
+    <div class="qfoot">
+      ${lastQ ? `<button class="btn" data-act="makeRoutine" ${ready ? '' : 'disabled'}>${ready ? '오늘 밤 루틴 만들기' : '하나를 골라 주세요'}</button>`
+              : `<button class="btn" data-act="qNext">다음</button>`}
+      ${S.baseline != null ? '<button class="link" data-act="makeRoutine">오늘은 건너뛰기 · 기본값으로 만들기</button>' : ''}
+    </div>
+  </section>`;
 }
 
 function routine() {
@@ -642,20 +691,39 @@ function endNight() {
 /* ---------------------------------------------------------------- morning */
 function morning() {
   const t = S.tonight; if (!t || !t.routine) { go('home'); return; }
-  const r = t.routine, demo = t.mode === 'demo', ok = M.latency != null && M.fresh != null && M.done.every(v => v !== null) && M.woke !== null;
+  const r = t.routine, demo = t.mode === 'demo';
+  // same one-question-per-screen flow as the 10초 체크, in the dawn palette
+  const Q = ['latency', 'fresh', 'acts', 'woke'];
+  M.step = clamp(M.step || 0, 0, Q.length - 1);
+  const q = Q[M.step], lastQ = M.step === Q.length - 1;
+  const card = (k, v, on, l, d, extra = '') => `<button type="button" class="opt" data-act="m" data-k="${k}" data-v="${v}"${extra} aria-pressed="${on}"><span><strong>${l}</strong>${d}</span><i class="dot" aria-hidden="true"></i></button>`;
+  const FRESH_L = [['전혀 개운하지 않아요', '몸이 무거워요'], ['별로 개운하지 않아요', '조금 더 자고 싶어요'], ['보통이에요', '평소와 비슷해요'], ['꽤 개운해요', '머리가 맑은 편이에요'], ['아주 개운해요', '푹 잤어요']];
+  const body = {
+    latency: { t: '어젯밤 잠들기까지<br>얼마나 걸렸나요?', s: '대충 느낀 대로 골라 주세요', ok: M.latency != null,
+      h: `<div class="grid2">${LAT.map(([v, l]) => `<button type="button" data-act="m" data-k="latency" data-v="${v}" aria-pressed="${M.latency === v}">${l}</button>`).join('')}</div>` },
+    fresh: { t: '지금 얼마나<br>개운한가요?', s: '일어나서 처음 든 느낌이에요', ok: M.fresh != null,
+      h: `<div class="opts tight">${FRESH_L.map(([l, d], i) => card('fresh', i + 1, M.fresh === i + 1, l, d)).join('')}</div>` },
+    acts: { t: '자기 전에 할 일,<br>해 보셨나요?', s: '못 했으면 내일은 다른 걸 먼저 권해요', ok: M.done.every(v => v !== null),
+      h: `<div class="opts">${r.actions.map((k, i) => `<div class="actq"><strong>${ACTION[k][0]}</strong>
+        <div class="seg two"><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="1" aria-pressed="${M.done[i] === true}">했어요</button><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="0" aria-pressed="${M.done[i] === false}">못 했어요</button></div></div>`).join('')}</div>` },
+    woke: { t: '밤중에<br>깬 적 있나요?', s: '깼다면 다시 잠드는 소리를 조정해요', ok: M.woke !== null,
+      h: `<div class="opts">${card('woke', 0, M.woke === false, '안 깼어요', '아침까지 이어서 잤어요')}${card('woke', 1, M.woke === true, '깼어요', '밤중에 한 번 이상 깼어요')}</div>` },
+  }[q];
   view.innerHTML = `
-  <section class="stack" style="padding-top:8px"><h2>아침 체크</h2>
-    <p class="small">${demo ? '시연이라 값을 미리 채워 두었습니다. 바꿔 보셔도 됩니다.' : '10초면 됩니다. 이 답으로 다음 밤 루틴을 고칩니다.'}</p></section>
-  <fieldset><legend>잠들기까지 얼마나 걸렸나요</legend>
-    <div class="seg six">${LAT.map(([v, l]) => `<button type="button" data-act="m" data-k="latency" data-v="${v}" aria-pressed="${M.latency === v}">${l}</button>`).join('')}</div></fieldset>
-  <fieldset><legend>지금 개운한가요</legend>
-    <div class="seg five">${FRESH.map((l, i) => `<button type="button" data-act="m" data-k="fresh" data-v="${i + 1}" aria-pressed="${M.fresh === i + 1}">${i + 1}<small>${l}</small></button>`).join('')}</div></fieldset>
-  ${r.actions.map((k, i) => `<fieldset><legend>${ACTION[k][0]}</legend>
-    <div class="seg two"><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="1" aria-pressed="${M.done[i] === true}">했어요</button><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="0" aria-pressed="${M.done[i] === false}">못 했어요</button></div></fieldset>`).join('')}
-  <fieldset><legend>밤중에 깼나요</legend>
-    <div class="seg two"><button type="button" data-act="m" data-k="woke" data-v="1" aria-pressed="${M.woke === true}">깼어요</button><button type="button" data-act="m" data-k="woke" data-v="0" aria-pressed="${M.woke === false}">안 깼어요</button></div></fieldset>
-  <button class="btn" data-act="saveMorning" ${ok ? '' : 'disabled'}>기록하고 다음 밤에 반영</button>
-  <button class="link" data-act="skipMorning">기록하지 않고 닫기</button>`;
+  <section class="qwrap">
+    <div class="qbar">
+      ${M.step ? '<button type="button" class="back" data-act="mBack" aria-label="이전 질문"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>' : '<span class="hello">좋은 아침이에요</span>'}
+      <div class="bars" style="grid-template-columns:repeat(${Q.length},1fr)" aria-hidden="true">${Q.map((_, i) => `<i class="${i <= M.step ? 'on' : ''}"></i>`).join('')}</div>
+      <span class="qcount">${M.step + 1}/${Q.length}</span>
+    </div>
+    <div class="q"><h2>${body.t}</h2><p class="small">${demo && !M.step ? '시연이라 답을 미리 채워 두었어요. 바꿔 보셔도 돼요.' : body.s}</p></div>
+    ${body.h}
+    <div class="qfoot">
+      ${lastQ ? `<button class="btn" data-act="saveMorning" ${body.ok ? '' : 'disabled'}>${body.ok ? '기록하고 다음 밤에 반영' : '하나를 골라 주세요'}</button>`
+              : `<button class="btn" data-act="mNext" ${body.ok ? '' : 'disabled'}>${body.ok ? '다음' : q === 'acts' ? '두 가지 모두 골라 주세요' : '하나를 골라 주세요'}</button>`}
+      <button class="link" data-act="skipMorning">기록하지 않고 닫기</button>
+    </div>
+  </section>`;
 }
 function saveMorning() {
   const t = S.tonight, r = t.routine, demo = t.mode === 'demo', d = new Date(t.meta ? t.meta.startedAt : Date.now());
@@ -779,17 +847,18 @@ function about() {
 
 /* ---------------------------------------------------------------- actions */
 const ACT = {
-  home() { go('home'); }, toCheck() { go('check'); }, toWatch() { go('watch'); }, playWatch() { startNight('watch'); }, toRoutine() { go('routine'); }, toRecords() { location.hash = 'records'; go('records'); },
+  home() { go('home'); }, toCheck() { if (C) C.step = 0; go('check'); },
+  qNext() { C.step++; go('check'); }, mNext() { M.step = (M.step || 0) + 1; go('morning'); }, mBack() { M.step = Math.max(0, (M.step || 0) - 1); go('morning'); }, qBack() { if (C.step > 0) { C.step--; go('check'); } else go('home'); }, toWatch() { go('watch'); }, playWatch() { startNight('watch'); }, toRoutine() { go('routine'); }, toRecords() { location.hash = 'records'; go('records'); },
   set(el) { const k = el.dataset.k; C[k] = +el.dataset.v; go('check', true); },
   makeRoutine() {
-    C.end = $('#endTime').value || C.end; C.wake = $('#wakeTime').value || C.wake;
+    const eT = $('#endTime'), wT = $('#wakeTime'); if (eT) C.end = eT.value || C.end; if (wT) C.wake = wT.value || C.wake;
     if (S.baseline == null) S.baseline = C.baseline;
     S.settings.wake = C.wake;
     const check = { tension: C.tension, fatigue: C.fatigue, end: C.end, wake: C.wake };
     S.tonight = { check, routine: buildRoutine(check, realNights(), { baseline: S.baseline, bedShift: S.settings.bedShift, fadeAfter: S.settings.fadeAfter }), example: false };
     save(); go('routine');
   },
-  recheck() { S.tonight = null; save(); go('check'); },
+  recheck() { S.tonight = null; if (C) C.step = 0; save(); go('check'); },
   preview() { const r = S.tonight.routine;
     if (previewing) { Sound.stopAll(); previewing = false; }
     else if (Sound.start(r.layers)) { Sound.ramp(.9, 1); previewing = true; }

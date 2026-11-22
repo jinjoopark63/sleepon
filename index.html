@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0A0F2A">
+<title>SLEEP:ON 스르르</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@300;500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* layout: one phone-width column. Night screens stay deep navy with a moon-amber key colour;
+     the morning check turns the same components to a dawn palette. The night line (sound level
+     drawn across the night) is the one loud element; everything around it stays quiet. */
+  --night-0:#0A0F2A; --night-1:#141A44; --night-2:#222A66; --line:#2F3880;
+  --ink:#E9ECFF; --mute:#9BA4D8; --moon:#FFD88A; --glow:#8EA0FF;
+  --dawn-0:#FFF4E3; --dawn-1:#FFD9BC; --dawn-ink:#3A2440; --dawn-mute:#7A5C6E;
+  --display:'Hahmlet','Nanum Myeongjo','AppleMyungjo','Noto Serif CJK KR',serif;
+  --body:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic','Noto Sans CJK KR',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:#060920;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--moon);outline-offset:2px;border-radius:6px}
+
+.app{--fg:var(--ink);--sub:var(--mute);--card:rgba(255,255,255,.06);--edge:rgba(142,160,255,.3);
+  --key:var(--moon);--key-ink:#2A2140;--pick:rgba(142,160,255,.24);
+  max-width:440px;margin:0 auto;height:100%;display:flex;flex-direction:column;color:var(--fg);
+  background:linear-gradient(180deg,var(--night-0) 0%,var(--night-1) 55%,var(--night-2) 100%)}
+.app[data-tone="dawn"]{--fg:var(--dawn-ink);--sub:var(--dawn-mute);--card:rgba(255,255,255,.62);
+  --edge:rgba(58,36,64,.2);--key:var(--dawn-ink);--key-ink:var(--dawn-0);--pick:rgba(58,36,64,.14);
+  background:linear-gradient(180deg,var(--dawn-0) 0%,var(--dawn-1) 100%)}
+@media (min-width:520px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+
+.top{display:flex;align-items:baseline;justify-content:space-between;padding:18px 20px 6px}
+.mark{font-family:var(--display);font-weight:700;font-size:20px;letter-spacing:.07em;text-decoration:none}
+.mark span{color:var(--key)}
+.tagline{font-size:12.5px;color:var(--sub)}
+main{flex:1;overflow-y:auto;padding:10px 20px 28px;display:flex;flex-direction:column;gap:18px}
+main > *{flex-shrink:0}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);background:rgba(10,15,42,.92)}
+.tabs a{padding:12px 0 14px;text-align:center;font-size:13.5px;color:var(--mute);text-decoration:none}
+.tabs a[aria-current="page"]{color:var(--moon);font-weight:600}
+.app[data-view="sleep"] .tabs,.app[data-view="sleep"] .top{display:none}
+.app[data-tone="dawn"] .tabs{display:none}
+
+h1{font-family:var(--display);font-weight:500;font-size:clamp(29px,8.4vw,37px);line-height:1.28;letter-spacing:-.01em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:500;font-size:22px;line-height:1.35;text-wrap:balance}
+h3{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--sub)}
+p.lead{color:var(--sub);font-size:15.5px;max-width:34em}
+.small{font-size:13px;color:var(--sub)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+
+.btn{display:flex;align-items:center;justify-content:center;min-height:52px;padding:0 18px;border-radius:14px;
+  font-weight:600;font-size:16px;background:var(--key);color:var(--key-ink);width:100%;text-align:center}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--edge)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.link{color:var(--sub);font-size:14px;text-decoration:underline;text-underline-offset:3px;align-self:center;padding:6px}
+
+.card{background:var(--card);border:1px solid var(--edge);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.card .big{font-family:var(--display);font-size:21px;font-weight:500;line-height:1.35}
+.card .why{font-size:14px;color:var(--sub)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid var(--key);color:var(--key);align-self:flex-start}
+
+.steps{list-style:none;display:grid;gap:0;border-top:1px solid var(--edge)}
+.steps li{display:grid;grid-template-columns:30px 1fr;gap:6px;padding:11px 0;border-bottom:1px solid var(--edge)}
+.steps b{font-family:var(--display);font-weight:300;font-size:22px;line-height:1.2;color:var(--key)}
+.steps strong{display:block;font-weight:600;font-size:15.5px}
+.steps span{font-size:13.5px;color:var(--sub)}
+
+fieldset{border:0;display:flex;flex-direction:column;gap:8px}
+legend,.lab{font-size:14.5px;font-weight:600;margin-bottom:8px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg.five{grid-template-columns:repeat(5,1fr)} .seg.six{grid-template-columns:repeat(3,1fr)} .seg.two{grid-template-columns:repeat(2,1fr)}
+.seg button{min-height:46px;border-radius:12px;border:1px solid var(--edge);background:var(--card);font-size:14.5px;padding:4px 6px;line-height:1.25}
+.seg button[aria-pressed="true"]{background:var(--key);color:var(--key-ink);border-color:var(--key);font-weight:600}
+.seg button small{display:block;font-size:11.5px;opacity:.8}
+.times{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.times label{display:flex;flex-direction:column;gap:6px;font-size:14.5px;font-weight:600}
+input[type="time"]{min-height:48px;border-radius:12px;border:1px solid var(--edge);background:var(--card);padding:0 12px;
+  font-family:var(--display);font-size:20px;font-variant-numeric:tabular-nums;width:100%}
+input[type="range"]{width:100%;accent-color:var(--moon)}
+.mix{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;align-items:center;font-size:14px}
+
+.plan{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}
+.plan div{display:flex;flex-direction:column}
+.plan .t{font-family:var(--display);font-weight:300;font-size:38px;line-height:1.1;font-variant-numeric:tabular-nums}
+.plan .arrow{color:var(--sub);padding-bottom:10px}
+.acts{list-style:none;display:flex;flex-direction:column;gap:10px}
+.acts li{display:grid;grid-template-columns:22px 1fr;gap:8px}
+.acts li::before{content:'';width:9px;height:9px;border-radius:50%;background:var(--key);margin-top:8px}
+.acts strong{font-weight:600} .acts span{display:block;font-size:13.5px;color:var(--sub)}
+
+/* sleep screen */
+.sleep{display:flex;flex-direction:column;gap:14px;flex:1;padding-top:26px}
+.pill{font-size:13px;font-weight:600;padding:5px 12px;border-radius:99px;background:rgba(142,160,255,.18);border:1px solid var(--edge)}
+.pill.on{background:rgba(255,216,138,.16);border-color:var(--moon);color:var(--moon)}
+.mode{font-size:12.5px;color:var(--sub)}
+.clock{font-family:var(--display);font-weight:300;font-size:clamp(72px,24vw,104px);line-height:1;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;text-align:center;margin-top:8px}
+.note{text-align:center;color:var(--sub);font-size:14.5px;min-height:2.9em}
+.trace{border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);padding:8px 0 6px}
+.trace canvas{display:block;width:100%;height:132px}
+.trace figcaption{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--sub);flex-wrap:wrap}
+.k{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:-6px}
+.k1{background:var(--glow)} .k2{background:var(--moon)} .ax{margin-left:auto}
+.log{list-style:none;display:flex;flex-direction:column;gap:5px;font-size:13.5px;min-height:92px}
+.log li{display:grid;grid-template-columns:20px 46px 1fr;gap:6px;color:var(--sub)}
+.log li:last-child{color:var(--fg)}
+.log i{font-style:normal;font-size:11px;width:17px;height:17px;border-radius:50%;border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;margin-top:2px}
+.log time{font-variant-numeric:tabular-nums}
+.log.all{min-height:auto;gap:8px;font-size:14px} .log.all li{color:var(--fg)}
+.chart figcaption{font-size:12px;color:var(--sub);margin-top:4px}
+details summary{cursor:pointer;font-size:14.5px;font-weight:600}
+.ctl{display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.vol{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;font-size:13px;color:var(--sub)}
+.sleep.dim > *:not(.clock){opacity:.12;transition:opacity .6s}
+.sleep.dim .clock{opacity:.35;transition:opacity .6s}
+
+/* records */
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sum .n{font-family:var(--display);font-weight:300;font-size:40px;line-height:1.1;font-variant-numeric:tabular-nums}
+.sum .n small{font-size:16px;font-family:var(--body)}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font-family:var(--body);fill:var(--mute);font-size:11px}
+.chart .v{fill:var(--ink);font-size:11.5px;font-weight:600}
+.banner{font-size:13.5px;border:1px dashed var(--moon);color:var(--moon);border-radius:12px;padding:9px 12px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--edge);vertical-align:top}
+th{font-size:12px;color:var(--sub);font-weight:600}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.adj{list-style:none;display:flex;flex-direction:column;gap:10px}
+.adj li{padding-left:16px;border-left:3px solid var(--key);font-size:15px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#fff;color:#1F2A44;font-size:14px;
+  padding:10px 16px;border-radius:12px;max-width:min(380px,90vw);box-shadow:0 8px 24px rgba(0,0,0,.35);z-index:5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app" data-view="home" data-tone="night">
+  <header class="top"><a class="mark" href="#tonight">SLEEP<span>:</span>ON</a><span class="tagline">스르르 · 웹 MVP</span></header>
+  <main id="view"></main>
+  <nav class="tabs" aria-label="주요 화면">
+    <a href="#tonight" data-tab="tonight">오늘 밤</a><a href="#records" data-tab="records">기록</a><a href="#about" data-tab="about">안내</a>
+  </nav>
+</div>
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const app = $('#app'), view = $('#view');
+const KEY = 'sleepon.mvp.v1';
+const pad = n => String(n).padStart(2, '0');
+const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => { m = ((Math.round(m) % 1440) + 1440) % 1440; return pad(Math.floor(m / 60)) + ':' + pad(m % 60); };
+const rel = t => (toMin(t) - 720 + 1440) % 1440;              // minutes since noon, so a night does not wrap
+const unrel = m => fromMin(m + 720);
+const dayStr = (d = new Date()) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const round5 = v => Math.round(v / 5) * 5;
+const hm = m => (m >= 60 ? Math.floor(m / 60) + '시간 ' : '') + (m % 60 ? (m % 60) + '분' : (m >= 60 ? '' : '0분'));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---------------------------------------------------------------- content */
+const SOUND = { rain: '빗소리', wave: '파도', brown: '브라운 노이즈', pink: '핑크 노이즈', wind: '바람', ambient: '느린 앰비언트' };
+const COMBO = {
+  'ambient+rain': { layers: { ambient: .8, rain: .55 }, why: '긴장이 높은 날에 맞춘 조합입니다. 1분에 60박인 느린 화음 아래에 빗소리를 얇게 깔았습니다.' },
+  'rain+brown': { layers: { rain: .75, brown: .5 }, why: '평소 같은 날의 기본 조합입니다. 변화가 적은 빗소리를 낮은 소리로 받쳤습니다.' },
+  'brown+wave': { layers: { brown: .7, wave: .6 }, why: '몸이 많이 피곤한 날에 맞춘 조합입니다. 자극이 적은 낮은 소리 위주입니다.' },
+  'wave+wind': { layers: { wave: .75, wind: .45 }, why: '긴장도 피로도 낮은 날의 조합입니다. 느리게 오르내리는 파도와 바람입니다.' },
+};
+const comboName = id => id.split('+').map(k => SOUND[k]).join(' + ');
+const ACTION = {
+  note: ['내일 할 일 3줄 적고 덮기', '머릿속 목록을 메모로 옮겨 둡니다.'],
+  breath: ['4초 들이쉬고 6초 내쉬기 5번', '누운 뒤 소리 박자에 맞춰 천천히 합니다.'],
+  screen: ['눕기 30분 전 화면 내려놓기', '알림은 방해금지로 돌려 둡니다.'],
+  light: ['방 조명 낮추기', '스탠드 하나만 남깁니다.'],
+  stretch: ['목과 어깨 2분 풀기', '하루 동안 굳은 곳만 가볍게 풉니다.'],
+  wash: ['따뜻한 물로 씻고 바로 눕기', '일정이 늦게 끝난 날의 짧은 마무리입니다.'],
+};
+const LAT = [[8, '10분 안쪽'], [15, '15분'], [20, '20분'], [30, '30분'], [45, '45분'], [70, '1시간 넘게']];
+const FRESH = ['전혀', '별로', '보통', '꽤', '아주'];
+const LEVEL = ['낮음', '보통', '높음'];
+
+/* ---------------------------------------------------------------- state (this browser only) */
+let MEM = false;
+const DEFAULT = { v: 1, baseline: null, sampleBaseline: 35, seeded: false, tonight: null, nights: [],
+  settings: { fadeAfter: null, bedShift: 0, resleepMin: 10, volume: .8, wake: '07:00' } };
+function seed(s) {
+  const lat = [38, 33, 36, 27, 24, 21, 18], fr = [2, 2, 3, 3, 4, 4, 4], tn = [2, 1, 2, 1, 2, 1, 2];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - (7 - i));
+    s.nights.push({ date: dayStr(d), tension: tn[i], fatigue: 1, combo: tn[i] === 2 ? 'ambient+rain' : 'rain+brown',
+      actions: ['screen', 'breath'], done: [i > 1, i > 3], bed: '23:50', wake: '07:00', latency: lat[i], fresh: fr[i], woke: i === 2, sample: true });
+  }
+  s.seeded = true;
+}
+function load() {
+  let s = null;
+  try { localStorage.setItem(KEY + '.t', '1'); localStorage.removeItem(KEY + '.t'); s = JSON.parse(localStorage.getItem(KEY) || 'null'); }
+  catch (e) { MEM = true; }
+  if (!s || s.v !== 1) s = JSON.parse(JSON.stringify(DEFAULT));
+  s.settings = Object.assign({}, DEFAULT.settings, s.settings);
+  if (!s.seeded) seed(s);
+  return s;
+}
+let S = load();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { MEM = true; } }
+const realNights = () => S.nights.filter(n => !n.sample && n.latency != null);
+const sampleNights = () => S.nights.filter(n => n.sample && n.latency != null);
+
+/* ---------------------------------------------------------------- routine rules (pure) */
+function defaultCombo(c) {
+  if (c.tension === 2) return 'ambient+rain';
+  if (c.fatigue === 2 && c.tension === 0) return 'brown+wave';
+  if (c.tension === 0) return 'wave+wind';
+  return 'rain+brown';
+}
+function buildRoutine(c, hist, opt) {
+  // sound: start from the rule, switch to a combination that put this person to sleep faster on similar nights
+  let combo = defaultCombo(c), why = COMBO[combo].why, learned = false;
+  const by = {};
+  hist.filter(n => n.tension === c.tension).forEach(n => { (by[n.combo] = by[n.combo] || []).push(n.latency); });
+  let best = null;
+  for (const k in by) if (by[k].length >= 2 && COMBO[k]) { const a = avg(by[k]); if (!best || a < best.a) best = { k, a, n: by[k].length }; }
+  const defAvg = by[combo] ? avg(by[combo]) : null;
+  if (best && best.k !== combo && (defAvg === null || defAvg - best.a >= 5)) {
+    combo = best.k; learned = true;
+    why = `긴장도가 같았던 지난 ${best.n}번의 밤에 이 조합으로 평균 ${Math.round(best.a)}분 만에 잠들었습니다.`;
+  }
+  // time: 7시간 30분 of sleep plus the time it usually takes to fall asleep, never earlier than 60분 after the day ends
+  const recent = hist.slice(-3).map(n => n.latency);
+  const lat = clamp(Math.round(recent.length ? avg(recent) : (opt.baseline || 20)), 10, 45);
+  const endR = rel(c.end); let wakeR = rel(c.wake); if (wakeR <= endR) wakeR += 1440;
+  const ideal = wakeR - 450 - lat - (opt.bedShift || 0), earliest = endR + 60;
+  const bedR = Math.max(ideal, earliest), late = bedR > ideal + 5;
+  const sleepMin = Math.max(0, wakeR - bedR - lat);
+  // behaviours: two, chosen by state; one skipped last night goes to the back of the line
+  let pool = c.tension === 2 ? ['note', 'breath', 'screen', 'light'] : c.fatigue === 2 ? ['screen', 'stretch', 'light', 'breath'] : ['screen', 'light', 'breath', 'stretch'];
+  if (late) pool = ['wash'].concat(pool);
+  const last = hist[hist.length - 1];
+  if (last && last.actions) last.actions.forEach((a, i) => { if (last.done && last.done[i] === false && pool.includes(a)) { pool = pool.filter(x => x !== a).concat(a); } });
+  const fadeAfter = opt.fadeAfter || clamp(round5(lat + 10), 15, 60);
+  return { combo, why, learned, layers: Object.assign({}, COMBO[combo].layers), actions: pool.slice(0, 2), bed: unrel(bedR), wake: c.wake,
+    sleepMin, late, lat, fadeAfter, usedHistory: recent.length };
+}
+function nextAdjust(n, pool, st) {
+  // what tomorrow's routine changes because of this morning's check
+  const out = [], last3 = pool.slice(-3).map(x => x.latency), a = Math.round(avg(last3));
+  const prev = n.fadeAfter || 30, nf = clamp(round5(a + 10), 15, 60);
+  if (nf !== prev) out.push(`소리를 줄이기 시작하는 시점을 누운 뒤 ${prev}분에서 ${nf}분으로 ${nf > prev ? '늦춥니다' : '앞당깁니다'}. 최근 ${last3.length}일 동안 잠드는 데 평균 ${a}분이 걸렸습니다.`);
+  else out.push(`소리를 줄이기 시작하는 시점은 누운 뒤 ${nf}분 그대로 둡니다. 최근 평균 ${a}분과 맞습니다.`);
+  st.fadeAfter = nf;
+  if (n.fresh <= 2) { st.bedShift = Math.min(45, (st.bedShift || 0) + 15); out.push('아침에 개운하지 않았으므로 내일 권장 취침 시각을 15분 앞당깁니다.'); }
+  n.actions.forEach((k, i) => { if (n.done[i] === false) out.push(`'${ACTION[k][0]}'는 하지 못했으므로 내일은 다른 행동을 먼저 제안합니다.`); });
+  if (n.woke) { const o = st.resleepMin || 10; st.resleepMin = Math.min(20, o + 5); if (st.resleepMin !== o) out.push(`밤중에 깼으므로 다시 잠들 때 트는 작은 소리를 ${o}분에서 ${st.resleepMin}분으로 늘립니다.`); }
+  const same = pool.filter(x => x.combo === n.combo);
+  if (same.length >= 2) out.push(`'${comboName(n.combo)}' 조합에서 잠드는 데 걸린 시간은 평균 ${Math.round(avg(same.map(x => x.latency)))}분입니다. 더 빨리 잠든 조합이 생기면 그쪽을 먼저 권합니다.`);
+  return out;
+}
+
+/* ---------------------------------------------------------------- a night a watch recorded, run through the same rules */
+const WATCH = { who: '대표자의 웨어러블(Apple Watch) 기록', date: '2026-11-05', target: '08:40',
+  seg: [['core','02:08','02:47'],['awake','02:47','02:49'],['core','02:49','03:04'],['awake','03:04','03:10'],['core','03:10','03:19'],['awake','03:19','03:20'],
+    ['core','03:20','03:31'],['awake','03:31','03:33'],['core','03:33','03:51'],['deep','03:51','04:03'],['core','04:03','04:07'],['deep','04:07','04:11'],
+    ['core','04:11','04:24'],['rem','04:24','04:56'],['core','04:56','05:08'],['deep','05:08','05:33'],['core','05:33','06:48'],['rem','06:48','07:19'],
+    ['core','07:19','08:16'],['rem','08:16','08:26'],['awake','08:26','08:38'],['core','08:38','08:44']] };
+const STAGE = { awake: ['깸', '#FF9B8E'], rem: ['REM(꿈 수면)', '#6FD0F5'], core: ['얕은 잠', '#5E8FF2'], deep: ['깊은 잠', '#8B7BEE'] };
+// what the sound does for each state the watch reports (starting values; the app is meant to tune them per person)
+const RESP = {
+  pre:    { lv: 1,   mix: null,                         pill: '잠들기 전 · 잠드는 소리',      state: '잠들기 전',            sound: '잠드는 소리',   why: '박자가 있는 소리로 잠드는 것을 돕습니다.' },
+  core:   { lv: .2,  mix: { brown: .9 },                pill: '얕은 잠 · 잔잔한 배경음',      state: '얕은 잠',              sound: '잔잔한 배경음',         why: '깨기 쉬운 단계라 주변 소음을 가립니다.' },
+  deep:   { lv: 0,   mix: { brown: .9 },                pill: '깊은 잠 · 소리 끔',             state: '깊은 잠',              sound: '소리 끔',                why: '소리가 필요 없는 구간이라 끕니다.' },
+  rem:    { lv: .1,  mix: { brown: .9 },                pill: '꿈 수면 · 아주 작은 배경음',     state: 'REM(꿈 수면)',                  sound: '아주 작은 배경음',    why: '변화가 있는 소리는 피하고 일정하게만 둡니다.' },
+  awake:  { lv: .35, mix: { ambient: .8, brown: .35 },  pill: '깸 · 다시 잠드는 소리',      state: '2분 넘게 깸',          sound: '다시 잠드는 소리',    why: '느린 화음으로 다시 잠들도록 돕습니다.' },
+  wake:   { lv: 0,   mix: null,                         pill: '깨우는 중',                  state: '기상 30분 전 얕은 잠', sound: '기상 소리',           why: '새소리에서 멜로디로 조금씩 키웁니다.' },
+};
+const pct = v => Math.round(v * 100) + '%';
+function watchPlan(rec) {
+  let prev = -1;
+  const seg = rec.seg.map(([k, a, b]) => { let s0 = toMin(a), e0 = toMin(b); while (s0 < prev) s0 += 1440; while (e0 < s0) e0 += 1440; prev = e0; return { k, s: s0, e: e0 }; });
+  let tgt = toMin(rec.target); while (tgt < seg[0].s) tgt += 1440;
+  const f = fromMin, t0 = seg[0].s - 10, last = seg[seg.length - 1].e, at = m => { const x = seg.find(x => m >= x.s && m < x.e); return x ? x.k : null; };
+  let wakeStart = tgt, why = null;                                                                      // 목표 30분 전부터 얕은 잠을 찾음
+  for (let m = tgt - 30; m < tgt; m++) { const k = at(m); if (k === 'core' || k === 'awake' || k === null) { wakeStart = m; why = k === 'core' ? '얕은 잠이라' : '이미 깨어 있어'; break; } }
+  const first = seg.find(x => x.k !== 'awake'), fadeStart = first.s + 3;                                // 잠듦 신호가 3분 이어지면 바꾸기 시작
+  const ev = [{ m: t0, key: 'pre', text: `루틴 소리 재생 중. 웨어러블 기록은 ${f(seg[0].s)}부터 있습니다.` }];
+  const snd = [[t0, 1], [fadeStart, 1]]; let cur = 1, handled = 0, skipped = 0;
+  const go = (m, key, ramp, text) => { if (m >= wakeStart) return; const lv = RESP[key].lv; ev.push({ m, key, text }); snd.push([m, cur], [Math.min(m + ramp, wakeStart), lv]); cur = lv; };
+  seg.forEach(x => {
+    if (x === first) { go(fadeStart, x.k, 5, `잠듦 신호가 3분 이어짐. 5분에 걸쳐 ${RESP[x.k].sound}으로 바꿉니다.`); return; }
+    if (x.s < fadeStart + 5) return;
+    if (x.k === 'awake') { if (x.s >= wakeStart) return; if (x.e - x.s > 2) { handled++; go(x.s + 2, 'awake', .5, '깸 신호가 2분 넘게 이어짐. 다시 잠드는 소리를 틉니다.'); } else skipped++; return; }
+    const lv = RESP[x.k].lv; if (lv === cur && ev[ev.length - 1].key === x.k) return;
+    go(x.s, x.k, 2, `${RESP[x.k].state.replace('REM(꿈 수면)', '꿈 수면')} 신호. ${x.k === 'deep' ? '소리를 끕니다.' : RESP[x.k].sound + '(' + pct(lv) + ')으로 바꿉니다.'}`); });
+  const ramp = clamp(tgt - wakeStart, 5, 10), end = Math.max(last, wakeStart + ramp);
+  ev.push({ m: wakeStart, key: 'wake', text: why ? `목표 ${rec.target}의 ${tgt - wakeStart}분 전, ${why} 기상 소리를 시작합니다.` : `목표 ${rec.target}. 얕은 잠을 찾지 못해 목표 시각에 기상 소리를 시작합니다.` });
+  snd.push([wakeStart, cur], [wakeStart + 1, 0], [end, 0]);
+  const tot = {}; seg.forEach(x => { tot[x.k] = (tot[x.k] || 0) + x.e - x.s; });
+  let quiet = 0; for (let i = 1; i < snd.length; i++) if (snd[i][1] === 0 && snd[i - 1][1] === 0 && snd[i][0] <= wakeStart) quiet += snd[i][0] - snd[i - 1][0];
+  return { seg, t0, end, ev, snd, wk: [[wakeStart, 0], [wakeStart + ramp, 1], [end, 1]], tot, handled, skipped, wakeStart, tgt, fadeStart, ramp, first: seg[0].s, last, quiet: Math.round(quiet), changes: ev.length - 1 };
+}
+
+/* ---------------------------------------------------------------- sound, generated in the browser */
+const Sound = (() => {
+  let ctx, master, user, wakeBus, layers = [], wakeT = [], bpm = 60, dead = false; const bufs = {};
+  function ensure() {
+    if (dead) return false;
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) { dead = true; return false; }
+      try {
+        ctx = new AC(); user = ctx.createGain(); user.gain.value = S.settings.volume; user.connect(ctx.destination);
+        master = ctx.createGain(); master.gain.value = 0; master.connect(user);
+        wakeBus = ctx.createGain(); wakeBus.gain.value = 0; wakeBus.connect(user);
+        const keep = ctx.createOscillator(), kg = ctx.createGain(); kg.gain.value = 0; keep.connect(kg); kg.connect(master); kg.connect(wakeBus); keep.start();   // keeps both buses rendering while nothing plays
+      } catch (e) { dead = true; ctx = null; return false; }
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return true;
+  }
+  function noise(type) {
+    if (bufs[type]) return bufs[type];
+    const len = ctx.sampleRate * 6, N = 4096, g = new Float32Array(len + N);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, last = 0;
+    for (let i = 0; i < len + N; i++) {
+      const w = Math.random() * 2 - 1;
+      if (type === 'white') g[i] = w * .5;
+      else if (type === 'pink') { b0 = .99886 * b0 + w * .0555179; b1 = .99332 * b1 + w * .0750759; b2 = .969 * b2 + w * .153852; b3 = .8665 * b3 + w * .3104856; b4 = .55 * b4 + w * .5329522; b5 = -.7616 * b5 - w * .016898; g[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * .5362) * .11; b6 = w * .115926; }
+      else { last = (last + .02 * w) / 1.02; g[i] = last * 3.5; }
+    }
+    const b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < len; i++) { if (i < N) { const t = i / N; d[i] = g[i] * t + g[len + i] * (1 - t); } else d[i] = g[i]; }   // seamless loop
+    return bufs[type] = b;
+  }
+  const src = t => { const s = ctx.createBufferSource(); s.buffer = noise(t); s.loop = true; s.start(0, Math.random() * 5); return s; };
+  const filt = (t, f, q) => { const b = ctx.createBiquadFilter(); b.type = t; b.frequency.value = f; if (q) b.Q.value = q; return b; };
+  const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
+  const lfo = (f, depth, param) => { const o = ctx.createOscillator(), g = gain(depth); o.frequency.value = f; o.connect(g); g.connect(param); o.start(); return o; };
+  const make = {
+    rain() { const out = gain(1), a = src('pink'), ga = gain(.9), b = src('white'), gb = gain(.2);
+      a.connect(filt('highpass', 700)).connect(filt('lowpass', 6500)).connect(ga).connect(out); b.connect(filt('bandpass', 4200, .8)).connect(gb).connect(out);
+      const o = lfo(.13, .12, ga.gain); return { out, stop() { [a, b, o].forEach(n => n.stop()); } }; },
+    wave() { const out = gain(1), a = src('brown'), l = filt('lowpass', 650), ga = gain(.55), b = src('pink'), gb = gain(.1);
+      a.connect(l).connect(ga).connect(out); b.connect(filt('highpass', 1800)).connect(gb).connect(out);
+      const os = [lfo(.09, .45, ga.gain), lfo(.09, .09, gb.gain), lfo(.09, 250, l.frequency)]; return { out, stop() { [a, b].concat(os).forEach(n => n.stop()); } }; },
+    brown() { const out = gain(1), a = src('brown'); a.connect(filt('lowpass', 480)).connect(gain(.85)).connect(out); return { out, stop() { a.stop(); } }; },
+    pink() { const out = gain(1), a = src('pink'); a.connect(filt('lowpass', 3800)).connect(gain(.5)).connect(out); return { out, stop() { a.stop(); } }; },
+    wind() { const out = gain(1), a = src('pink'), bp = filt('bandpass', 520, 1.1), g = gain(.7); a.connect(bp).connect(g).connect(out);
+      const os = [lfo(.06, 260, bp.frequency), lfo(.11, .25, g.gain)]; return { out, stop() { [a].concat(os).forEach(n => n.stop()); } }; },
+    ambient() { const out = gain(1), lp = filt('lowpass', 900); lp.connect(out);
+      const chords = [[110, 164.81, 220, 277.18], [87.31, 130.81, 174.61, 220], [130.81, 196, 261.63, 329.63], [98, 146.83, 196, 246.94]];
+      let i = 0, next = ctx.currentTime + .05, alive = true, timer;
+      (function tick() { if (!alive) return;
+        while (next < ctx.currentTime + 2.5) { const len = 8 * 60 / bpm;
+          chords[i % 4].forEach((f, k) => { const o = ctx.createOscillator(), g = gain(0); o.type = k < 2 ? 'sine' : 'triangle'; o.frequency.value = f; o.detune.value = k % 2 ? 5 : -5;
+            g.gain.setValueAtTime(0, next); g.gain.linearRampToValueAtTime(.2 / Math.sqrt(k + 1), next + len * .4); g.gain.linearRampToValueAtTime(0, next + len * 1.15);
+            o.connect(g); g.connect(lp); o.start(next); o.stop(next + len * 1.2); });
+          i++; next += len; }
+        timer = setTimeout(tick, 400); })();
+      return { out, stop() { alive = false; clearTimeout(timer); const t = ctx.currentTime; out.gain.setTargetAtTime(0, t, .1); } }; },
+  };
+  const kill = list => list.forEach(L => { try { L.stop(); L.out.disconnect(); } catch (e) {} });
+  function stopLayers() { kill(layers); layers = []; }
+  // every level change is also kept as a plain list of points, so the screen can draw the level without asking the audio thread
+  const mk = () => { let pts = [[0, 0]]; return {
+    at(now = performance.now()) { for (let i = 1; i < pts.length; i++) if (now < pts[i][0]) { const a = pts[i - 1], b = pts[i]; return b[0] === a[0] ? b[1] : a[1] + (b[1] - a[1]) * (now - a[0]) / (b[0] - a[0]); } return pts[pts.length - 1][1]; },
+    go(list) { const now = performance.now(), cur = this.at(now); pts = [[now, cur]].concat(list.map(([sec, v]) => [now + sec * 1000, v])); return cur; } }; };
+  const envM = mk(), envW = mk();
+  function drive(param, env, list) { const cur = env.go(list); if (!param) return; const t = ctx.currentTime; param.cancelScheduledValues(t); param.setValueAtTime(cur, t); let lv = cur;
+    list.forEach(([sec, v]) => { if (v === lv) param.setValueAtTime(v, t + sec); else param.linearRampToValueAtTime(v, t + sec); lv = v; }); }
+  return {
+    start(map) { if (!ensure()) return false; stopLayers(); bpm = 60; for (const k in map) { const L = make[k](); L.key = k; L.out.gain.value = map[k]; L.out.connect(master); layers.push(L); } return true; },
+    morph(map, sec = 1.5) { if (!ensure()) return; const t = ctx.currentTime, keep = [];
+      layers.forEach(L => { if (map[L.key] != null) { L.out.gain.setTargetAtTime(map[L.key], t, sec / 4); keep.push(L); } else { L.out.gain.setTargetAtTime(0, t, sec / 4); setTimeout(() => kill([L]), sec * 1000 + 400); } });
+      for (const k in map) if (!keep.find(L => L.key === k)) { const L = make[k](); L.key = k; L.out.gain.value = 0; L.out.gain.setTargetAtTime(map[k], t, sec / 4); L.out.connect(master); keep.push(L); }
+      layers = keep; },
+    setLayer(k, v) { const L = layers.find(x => x.key === k); if (L) L.out.gain.setTargetAtTime(v, ctx.currentTime, .05); },
+    ramp(to, sec) { drive(ensure() && master.gain, envM, [[sec, to]]); },
+    // rise to a level, stay there, then fall to silence: all on the audio clock, so it holds even if the tab is throttled
+    plan(level, riseSec, holdSec, fallSec) { const h = Math.max(riseSec, holdSec); drive(ensure() && master.gain, envM, [[riseSec, level], [h, level], [h + fallSec, 0]]); },
+    tempo(v) { bpm = v; },
+    silence() { stopLayers(); drive(ctx && master.gain, envM, [[.05, 0]]); },
+    wake(rampSec) { const ok = ensure(); wakeT.forEach(clearTimeout); wakeT = []; drive(ok && wakeBus.gain, envW, [[rampSec, 1]]); if (!ok) return;
+      const bird = () => { const at = ctx.currentTime + .05, n = 2 + Math.floor(Math.random() * 3);
+        for (let i = 0; i < n; i++) { const o = ctx.createOscillator(), g = gain(0), f = 2400 + Math.random() * 1400, ts = at + i * .11;
+          o.frequency.setValueAtTime(f, ts); o.frequency.exponentialRampToValueAtTime(f * (Math.random() < .5 ? 1.35 : .75), ts + .08);
+          g.gain.setValueAtTime(0, ts); g.gain.linearRampToValueAtTime(.1, ts + .015); g.gain.exponentialRampToValueAtTime(.001, ts + .1);
+          o.connect(g); g.connect(wakeBus); o.start(ts); o.stop(ts + .12); }
+        wakeT.push(setTimeout(bird, 700 + Math.random() * 1800)); };
+      const notes = [523.25, 659.25, 783.99, 659.25, 587.33, 783.99, 880, 783.99]; let ni = 0;
+      const mel = () => { const ts = ctx.currentTime + .05, o = ctx.createOscillator(), g = gain(0); o.type = 'triangle'; o.frequency.value = notes[ni++ % notes.length];
+        g.gain.setValueAtTime(0, ts); g.gain.linearRampToValueAtTime(.14, ts + .04); g.gain.exponentialRampToValueAtTime(.001, ts + 1.4);
+        o.connect(g); g.connect(wakeBus); o.start(ts); o.stop(ts + 1.5); wakeT.push(setTimeout(mel, 750)); };
+      bird(); wakeT.push(setTimeout(mel, rampSec * 450)); },
+    stopWake() { wakeT.forEach(clearTimeout); wakeT = []; drive(ctx && wakeBus.gain, envW, [[.4, 0]]); },
+    stopAll() { this.stopWake(); drive(ctx && master.gain, envM, [[.4, 0]]); const old = layers; layers = []; setTimeout(() => kill(old), 500); },
+    volume(v) { if (user) user.gain.setTargetAtTime(v, ctx.currentTime, .05); },
+    level: () => envM.at(), wakeLevel: () => envW.at(),
+  };
+})();
+
+/* ---------------------------------------------------------------- navigation */
+let V = 'home', C = null, M = null, sess = null, previewing = false, lastAdjust = [], toastT;
+function toast(msg) { let t = $('.toast'); if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 3600); }
+function go(v, quiet) {
+  if (previewing && v !== 'routine') { Sound.stopAll(); previewing = false; }
+  V = v; app.dataset.view = v; app.dataset.tone = (v === 'morning' || v === 'done') ? 'dawn' : 'night';
+  const tab = v === 'records' ? 'records' : v === 'about' ? 'about' : 'tonight';
+  document.querySelectorAll('.tabs a').forEach(a => a.dataset.tab === tab ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  ({ home, check, routine, sleep, morning, done, records, about, watch })[v]();
+  if (!quiet) view.scrollTop = 0;
+}
+window.addEventListener('hashchange', () => {
+  if (sess) return;                                   // a night in progress keeps the screen
+  const h = location.hash.replace('#', '');
+  if (h === 'records' || h === 'about' || h === 'watch') go(h); else if (V === 'records' || V === 'about' || V === 'watch') go('home');
+});
+
+/* ---------------------------------------------------------------- screens */
+function home() {
+  const t = S.tonight, last = realNights().slice(-1)[0];
+  view.innerHTML = `
+  <section class="stack" style="gap:14px;padding-top:14px">
+    <h1>잠이 바뀌면<br>소리도 바뀝니다</h1>
+    <p class="lead">웨어러블이 읽은 수면 상태에 맞춰 소리를 낮추고, 끄고, 다시 틉니다. 무엇을 틀지 고르는 일도, 끄는 일도 맡기세요.</p>
+  </section>
+  ${t && t.routine ? `<div class="card"><span class="tag">오늘 밤 루틴 준비됨</span><div class="big">${esc(comboName(t.routine.combo))}</div><div class="why">${t.routine.bed}에 눕고 ${t.routine.wake}에 일어납니다.</div></div>` : ''}
+  <div class="stack">
+    <button class="btn" data-act="toWatch">실제 웨어러블 기록으로 보기</button>
+    <button class="btn ghost" data-act="${t && t.routine ? 'toRoutine' : 'toCheck'}">${t && t.routine ? '오늘 밤 루틴 보기' : '10초 체크로 오늘 밤 시작'}</button>
+  </div>
+  <ol class="steps">
+    <li><b>1</b><div><strong>오늘 밤 루틴</strong><span>긴장도, 피로도, 일정, 기상 시각으로 소리와 행동과 취침 시각을 정합니다.</span></div></li>
+    <li><b>2</b><div><strong>수면 상태에 맞춰 바뀌는 소리</strong><span>얕은 잠에는 낮은 연속음, 깊은 잠에는 무음, 깨면 다시 잠드는 소리로 바꿉니다.</span></div></li>
+    <li><b>3</b><div><strong>천천히 깨우는 기상</strong><span>새소리에서 멜로디로, 몇 분에 걸쳐 조금씩 커집니다.</span></div></li>
+    <li><b>4</b><div><strong>아침 체크</strong><span>잠드는 데 걸린 시간과 개운함을 남기면 다음 밤 루틴이 바뀝니다.</span></div></li>
+  </ol>
+  ${last ? `<div class="card"><h3>지난 기록</h3><div class="big">${last.latency}분 만에 잠듦 · 개운함 ${last.fresh}/5</div></div>` : ''}
+  <p class="small">웹 MVP는 웨어러블이 남긴 기록을 넣어 보거나, 웨어러블 없이 타이머와 버튼으로 쓸 수 있습니다. 치료나 진단을 위한 서비스가 아닙니다.</p>`;
+}
+
+function check() {
+  if (!C) { const n = new Date(), late = n.getHours() >= 17; C = { tension: 1, fatigue: 1, end: late ? fromMin(Math.ceil((n.getHours() * 60 + n.getMinutes()) / 10) * 10) : '22:00', wake: S.settings.wake, baseline: S.baseline }; }
+  const seg = (name, val) => `<div class="seg">${LEVEL.map((l, i) => `<button type="button" data-act="set" data-k="${name}" data-v="${i}" aria-pressed="${val === i}">${l}</button>`).join('')}</div>`;
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>10초 체크</h2><p class="small">네 가지만 답하면 오늘 밤 루틴을 만듭니다.</p></section>
+  <fieldset><legend>지금 긴장도</legend>${seg('tension', C.tension)}</fieldset>
+  <fieldset><legend>지금 피로도</legend>${seg('fatigue', C.fatigue)}</fieldset>
+  <div class="times">
+    <label for="endTime">오늘 일정이 끝나는 시각<input id="endTime" type="time" value="${C.end}"></label>
+    <label for="wakeTime">내일 일어날 시각<input id="wakeTime" type="time" value="${C.wake}"></label>
+  </div>
+  ${S.baseline == null ? `<fieldset><legend>평소 잠드는 데 걸리는 시간 <span class="small">(처음 한 번만 묻습니다)</span></legend>
+    <div class="seg six">${LAT.map(([v, l]) => `<button type="button" data-act="set" data-k="baseline" data-v="${v}" aria-pressed="${C.baseline === v}">${l}</button>`).join('')}</div></fieldset>` : ''}
+  <button class="btn" data-act="makeRoutine" ${C.baseline == null ? 'disabled' : ''}>오늘 밤 루틴 만들기</button>
+  <button class="link" data-act="home">처음으로</button>`;
+}
+
+function routine() {
+  const t = S.tonight, r = t.routine;
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>오늘 밤 루틴</h2>
+    <p class="small">긴장도 ${LEVEL[t.check.tension]}, 피로도 ${LEVEL[t.check.fatigue]}, 일정 종료 ${t.check.end} 기준${t.example ? ' · 예시 기록으로 만든 루틴' : ''}</p></section>
+  <div class="card"><h3>소리</h3>
+    <div class="big">${esc(comboName(r.combo))}</div>${r.learned ? '<span class="tag">지난 기록 반영</span>' : ''}
+    <div class="why">${esc(r.why)}</div>
+    <div class="mix">${Object.keys(r.layers).map(k => `<label for="mix-${k}">${SOUND[k]}</label><input id="mix-${k}" type="range" min="0" max="100" value="${Math.round(r.layers[k] * 100)}" data-layer="${k}">`).join('')}</div>
+    <button class="btn ghost" data-act="preview" aria-pressed="${previewing}">${previewing ? '미리 듣기 멈춤' : '미리 듣기'}</button>
+  </div>
+  <div class="card"><h3>자기 전에 할 일</h3>
+    <ul class="acts">${r.actions.map(k => `<li><div><strong>${ACTION[k][0]}</strong><span>${ACTION[k][1]}</span></div></li>`).join('')}</ul></div>
+  <div class="card"><h3>시각</h3>
+    <div class="plan"><div><span class="small">눕기</span><span class="t">${r.bed}</span></div><span class="arrow">→</span><div><span class="small">일어나기</span><span class="t">${r.wake}</span></div></div>
+    <div class="why">예상 수면 ${hm(r.sleepMin)}. ${r.late ? '일정이 늦게 끝나 권장보다 짧습니다. ' : ''}소리는 누운 뒤 ${r.fadeAfter}분부터 5분에 걸쳐 줄어듭니다${r.usedHistory ? ` (최근 ${r.usedHistory}일 평균 입면 ${r.lat}분 기준)` : ''}.</div>
+  </div>
+  <div class="stack">
+    <button class="btn" data-act="startReal">이대로 수면 시작</button>
+    <button class="btn ghost" data-act="toWatch">실제 웨어러블 기록으로 보기</button>
+    <button class="link" data-act="recheck">체크 다시 하기</button>
+  </div>`;
+}
+
+/* ---------------------------------------------------------------- the night */
+const PH = {
+  awake: ['깨어 있음 · 소리 재생 중', 0], fading: ['잠듦 추정 · 소리 줄이는 중', 0], silent: ['무음 유지', 0],
+  resleep: ['다시 잠드는 중 · 작은 소리', 0], waking: ['깨우는 중', 1],
+};
+function logEv(label, text) { sess.log.push({ x: sess.p, label, text }); const ol = $('#log'); if (ol) ol.innerHTML = sess.log.slice(-4).map(e => `<li><i>${sess.log.indexOf(e) + 1}</i><time>${e.label}</time><span>${esc(e.text)}</span></li>`).join(''); }
+function setPhase(p, note) { sess.phase = p; sess.note = note; paintSleep(); }
+function later(sec, fn) { sess.timers.push(setTimeout(() => { if (sess) fn(); }, sec * 1000)); }
+function clearLater() { sess.timers.forEach(clearTimeout); sess.timers = []; }
+function nowLabel() { if (sess.mode === 'demo') return unrel(simClock()); if (sess.mode === 'watch') return fromMin(simClock()); const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function simClock() { const K = sess.keys, t = (Date.now() - sess.t0) / 1000; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const a = K[i - 1], b = K[i]; return a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); } return K[K.length - 1][1]; }
+
+function startNight(mode) {
+  const r = S.tonight && S.tonight.routine; previewing = false;
+  if (!Sound.start(r ? r.layers : COMBO['rain+brown'].layers)) toast('이 브라우저에서는 소리를 낼 수 없어 화면 동작만 보여 드립니다.');
+  sess = { mode, t0: Date.now(), phase: 'awake', note: '', log: [], trace: [], timers: [], p: 0, extends: 0, resleeps: 0, dimAt: Date.now() + 20000 };
+  if (mode !== 'watch') { S.tonight.mode = mode; S.tonight.startedAt = sess.t0; save(); }
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(l => { sess && (sess.lock = l); }).catch(() => {}); } catch (e) {}
+  go('sleep');
+  mode === 'demo' ? runDemo(r) : mode === 'watch' ? runWatch() : runReal(r);
+  sess.tick = setInterval(tick, 200); tick();
+}
+function runReal(r) {
+  const now = new Date(), w = toMin(r.wake); const wake = new Date(now); wake.setHours(Math.floor(w / 60), w % 60, 0, 0); if (wake <= now) wake.setDate(wake.getDate() + 1);
+  sess.wakeAt = wake.getTime(); sess.span = sess.wakeAt - sess.t0;
+  logEv(nowLabel(), '수면 시작. 소리를 틉니다.');
+  armFade(r.fadeAfter);
+}
+function armFade(min) {
+  clearLater(); sess.fadeAt = Date.now() + min * 60000;
+  Sound.tempo(60); Sound.plan(1, 2, min * 60, 300);
+  setPhase('awake', `약 ${min}분 뒤부터 소리를 5분에 걸쳐 줄입니다. 아직 깨어 있으면 아래 버튼을 눌러 주세요.`);
+  later(min * 60, () => { Sound.tempo(50); logEv(nowLabel(), '예상 입면 시각. 음량과 박자를 줄이기 시작합니다.'); setPhase('fading', '잠드셨을 시각이라 소리를 줄이고 있습니다.'); });
+  later(min * 60 + 300, () => { Sound.silence(); logEv(nowLabel(), '무음으로 바꿨습니다.'); setPhase('silent', `${S.tonight.routine.wake}까지 조용히 둡니다. 밤중에 깨면 작은 소리를 다시 틀 수 있습니다.`); });
+}
+function beginWake(text, rampSec) {
+  if (sess.phase === 'waking') return; clearLater(); Sound.silence(); Sound.wake(rampSec);
+  logEv(nowLabel(), text); setPhase('waking', '새소리에서 멜로디로 조금씩 커집니다. 일어나면 버튼을 눌러 주세요.');
+}
+function runDemo(r) {
+  const bedR = rel(r.bed); let wakeR = rel(r.wake); if (wakeR <= bedR) wakeR += 1440;
+  const mid = Math.round(bedR + (wakeR - bedR) * .47);
+  sess.keys = [[0, bedR], [9, bedR + 18], [16, bedR + 23], [26, mid], [33, mid + 8], [43, wakeR - 19], [58, wakeR - 12]]; sess.span = 60000;
+  Sound.ramp(1, 2);
+  logEv(unrel(bedR), '수면 시작. 소리를 틉니다.');
+  setPhase('awake', '시연입니다. 웨어러블이 보낼 신호를 정해 둔 순서로 흉내 냅니다.');
+  later(9, () => { Sound.ramp(0, 7); Sound.tempo(48); logEv(unrel(bedR + 18), '잠듦 신호. 음량과 박자를 줄입니다.'); setPhase('fading', '잠든 것을 알아채고 소리를 줄이고 있습니다.'); });
+  later(16, () => { logEv(unrel(bedR + 23), '무음으로 바꿨습니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
+  later(26, () => { Sound.ramp(.35, 1.5); logEv(unrel(mid), '뒤척임이 늘어 깬 것으로 봅니다. 작은 소리를 다시 틉니다.'); setPhase('resleep', '밤중에 깨면 작은 소리로 다시 잠들도록 돕습니다.'); });
+  later(33, () => { Sound.ramp(0, 4); logEv(unrel(mid + 8), '다시 잠듦 신호. 무음으로 돌아갑니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
+  later(43, () => { beginWake(`얕은 잠 신호. 목표 ${r.wake}보다 19분 먼저 깨우기 시작합니다.`, 10); });
+  later(75, () => { if (sess && sess.phase === 'waking') endNight(); });
+}
+function runWatch() {
+  const P = watchPlan(WATCH), r = S.tonight && S.tonight.routine, base = r ? r.layers : COMBO['rain+brown'].layers; let T = 0; sess.keys = [];
+  P.ev.forEach((e, i) => { const at = T, R = RESP[e.key]; sess.keys.push([at, e.m]);
+    later(at, () => {
+      if (e.key === 'wake') { sess.pill = R.pill; beginWake(e.text, 10); return; }
+      if (i === 0) Sound.ramp(1, 2); else { Sound.morph(R.mix || base, 1.5); Sound.ramp(R.lv, i === 1 ? 3.5 : 1.5); Sound.tempo(48); }
+      logEv(fromMin(e.m), e.text); sess.pill = R.pill; setPhase(e.key === 'pre' ? 'awake' : e.key === 'awake' ? 'resleep' : 'silent', R.why); });
+    T += i === 0 ? 4.5 : i === 1 ? 5 : e.key === 'awake' ? 4 : 2.8; });
+  sess.keys.push([T + 14, P.wakeStart + P.ramp]); sess.span = (T + 16) * 1000;
+  later(T + 26, () => { if (sess) endNight(); });
+}
+function tick() {
+  if (!sess) return;
+  const el = Date.now() - sess.t0; sess.p = clamp(el / sess.span, 0, 1);
+  if (sess.mode === 'real' && sess.phase !== 'waking' && Date.now() >= sess.wakeAt) beginWake(`목표 시각 ${S.tonight.routine.wake}. 기상 소리를 시작합니다.`, 300);
+  sess.trace.push([sess.p, clamp(Sound.level(), 0, 1), clamp(Sound.wakeLevel(), 0, 1)]);
+  if (sess.trace.length > 1500) sess.trace = sess.trace.filter((_, i) => i % 2 === 0);
+  const c = $('#clock'); if (c) c.textContent = nowLabel();
+  const s = $('.sleep'); if (s) s.classList.toggle('dim', sess.mode === 'real' && sess.phase !== 'waking' && Date.now() > sess.dimAt);
+  draw();
+}
+function draw() {
+  const c = $('#night'); if (!c) return;
+  const w = c.clientWidth, h = c.clientHeight, d = window.devicePixelRatio || 1;
+  if (c.width !== Math.round(w * d)) { c.width = Math.round(w * d); c.height = Math.round(h * d); }
+  const g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
+  const top = 8, bot = h - 22, X = p => 2 + p * (w - 4), Y = v => bot - (bot - top) * v;
+  g.lineWidth = 1; g.strokeStyle = 'rgba(142,160,255,.2)'; g.font = '10px sans-serif'; g.fillStyle = 'rgba(155,164,216,.9)';
+  [0, .5, 1].forEach(v => { g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(1), Y(v)); g.stroke(); });
+  const area = (idx, stroke, fill) => { const T = sess.trace; if (!T.length) return;
+    g.beginPath(); g.moveTo(X(T[0][0]), bot); T.forEach(s => g.lineTo(X(s[0]), Y(s[idx]))); g.lineTo(X(T[T.length - 1][0]), bot); g.closePath(); g.fillStyle = fill; g.fill();
+    g.beginPath(); T.forEach((s, i) => i ? g.lineTo(X(s[0]), Y(s[idx])) : g.moveTo(X(s[0]), Y(s[idx]))); g.strokeStyle = stroke; g.lineWidth = 2; g.stroke(); };
+  area(1, '#8EA0FF', 'rgba(142,160,255,.22)'); area(2, '#FFD88A', 'rgba(255,216,138,.2)');
+  const last = sess.trace[sess.trace.length - 1];
+  if (last) { g.beginPath(); g.arc(X(last[0]), Y(Math.max(last[1], last[2])), 4, 0, 7); g.fillStyle = last[2] > last[1] ? '#FFD88A' : '#E9ECFF'; g.fill(); }
+  g.textAlign = 'center'; g.fillStyle = '#E9ECFF';
+  sess.log.forEach((e, i) => { const x = clamp(X(e.x), 8, w - 8); g.beginPath(); g.moveTo(x, bot); g.lineTo(x, bot + 4); g.strokeStyle = 'rgba(233,236,255,.7)'; g.lineWidth = 1; g.stroke(); g.fillText(String(i + 1), x, bot + 16); });
+}
+function sleep() {
+  if (!sess) { go('home'); return; }
+  const demo = sess.mode === 'demo', rec = sess.mode === 'watch';
+  view.innerHTML = `
+  <section class="sleep">
+    <div class="row between"><span class="pill" id="phase"></span><span class="mode">${demo ? '시연 · 정해 둔 신호' : rec ? `웨어러블 기록 재생 · ${+WATCH.date.slice(5, 7)}월 ${+WATCH.date.slice(8)}일` : '타이머 방식'}</span></div>
+    <div class="clock" id="clock">--:--</div>
+    <p class="note" id="phaseNote"></p>
+    <figure class="trace"><canvas id="night" role="img" aria-label="밤 동안의 소리 크기 변화"></canvas>
+      <figcaption><span class="k k1"></span><span>수면 소리</span><span class="k k2"></span><span>기상 소리</span><span class="ax">${demo ? '하룻밤을 약 1분으로 줄였습니다' : rec ? '기록된 하룻밤을 약 1분으로 줄였습니다' : '누운 시각부터 기상 시각까지'}</span></figcaption></figure>
+    <ol class="log" id="log" aria-live="polite"></ol>
+    <div class="ctl" id="ctl"></div>
+    <label class="vol" for="vol">소리 크기<input id="vol" type="range" min="0" max="100" value="${Math.round(S.settings.volume * 100)}"></label>
+  </section>`;
+  $('#log').innerHTML = sess.log.slice(-4).map(e => `<li><i>${sess.log.indexOf(e) + 1}</i><time>${e.label}</time><span>${esc(e.text)}</span></li>`).join('');
+  paintSleep();
+}
+function paintSleep() {
+  const pill = $('#phase'); if (!pill || !sess) return;
+  const rec = sess.mode === 'watch', demo = sess.mode === 'demo' || rec, p = sess.phase;
+  pill.textContent = sess.pill ? sess.pill : demo && p === 'fading' ? '잠듦 감지 · 소리 줄이는 중' : PH[p][0]; pill.classList.toggle('on', !!PH[p][1]);
+  $('#phaseNote').textContent = sess.note;
+  let b = '';
+  if (rec) b = '<button class="btn ghost" data-act="wakeUp">재생 끝내기</button>';
+  else if (p === 'waking') b = '<button class="btn" data-act="wakeUp">일어났어요</button>';
+  else if (demo) b = '<button class="btn ghost" data-act="wakeUp">시연 끝내고 아침 체크로</button>';
+  else {
+    if (p === 'awake' || p === 'fading' || p === 'resleep') b += '<button class="btn" data-act="stillAwake">아직 깨어 있어요 · 10분 더</button>';
+    if (p === 'silent') b += `<button class="btn" data-act="resleep">깼어요 · 작은 소리 ${S.settings.resleepMin}분</button>`;
+    b += '<button class="btn ghost" data-act="wakeUp">지금 일어나기</button>';
+  }
+  $('#ctl').innerHTML = b;
+}
+function endNight() {
+  const meta = { mode: sess.mode, extends: sess.extends, resleeps: sess.resleeps, startedAt: sess.t0 };
+  clearLater(); clearInterval(sess.tick); try { sess.lock && sess.lock.release(); } catch (e) {}
+  Sound.stopAll(); sess = null; if (meta.mode === 'watch') { go('watch'); return; }
+  S.tonight.meta = meta; save();
+  const r = S.tonight.routine;
+  M = meta.mode === 'demo' ? { latency: 20, fresh: 4, done: r.actions.map(() => true), woke: true } : { latency: null, fresh: null, done: r.actions.map(() => null), woke: meta.resleeps > 0 ? true : null };
+  go('morning');
+}
+
+/* ---------------------------------------------------------------- morning */
+function morning() {
+  const t = S.tonight; if (!t || !t.routine) { go('home'); return; }
+  const r = t.routine, demo = t.mode === 'demo', ok = M.latency != null && M.fresh != null && M.done.every(v => v !== null) && M.woke !== null;
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>아침 체크</h2>
+    <p class="small">${demo ? '시연이라 값을 미리 채워 두었습니다. 바꿔 보셔도 됩니다.' : '10초면 됩니다. 이 답으로 다음 밤 루틴을 고칩니다.'}</p></section>
+  <fieldset><legend>잠들기까지 얼마나 걸렸나요</legend>
+    <div class="seg six">${LAT.map(([v, l]) => `<button type="button" data-act="m" data-k="latency" data-v="${v}" aria-pressed="${M.latency === v}">${l}</button>`).join('')}</div></fieldset>
+  <fieldset><legend>지금 개운한가요</legend>
+    <div class="seg five">${FRESH.map((l, i) => `<button type="button" data-act="m" data-k="fresh" data-v="${i + 1}" aria-pressed="${M.fresh === i + 1}">${i + 1}<small>${l}</small></button>`).join('')}</div></fieldset>
+  ${r.actions.map((k, i) => `<fieldset><legend>${ACTION[k][0]}</legend>
+    <div class="seg two"><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="1" aria-pressed="${M.done[i] === true}">했어요</button><button type="button" data-act="m" data-k="done" data-i="${i}" data-v="0" aria-pressed="${M.done[i] === false}">못 했어요</button></div></fieldset>`).join('')}
+  <fieldset><legend>밤중에 깼나요</legend>
+    <div class="seg two"><button type="button" data-act="m" data-k="woke" data-v="1" aria-pressed="${M.woke === true}">깼어요</button><button type="button" data-act="m" data-k="woke" data-v="0" aria-pressed="${M.woke === false}">안 깼어요</button></div></fieldset>
+  <button class="btn" data-act="saveMorning" ${ok ? '' : 'disabled'}>기록하고 다음 밤에 반영</button>
+  <button class="link" data-act="skipMorning">기록하지 않고 닫기</button>`;
+}
+function saveMorning() {
+  const t = S.tonight, r = t.routine, demo = t.mode === 'demo', d = new Date(t.meta ? t.meta.startedAt : Date.now());
+  const n = { date: dayStr(d), tension: t.check.tension, fatigue: t.check.fatigue, combo: r.combo, actions: r.actions, done: M.done, bed: r.bed, wake: r.wake,
+    latency: M.latency, fresh: M.fresh, woke: M.woke, fadeAfter: r.fadeAfter, sample: demo };
+  let cleared = false;
+  if (demo) S.nights = S.nights.filter(x => !(x.sample && x.date === n.date));
+  if (!demo && sampleNights().length) { S.nights = S.nights.filter(x => !x.sample); cleared = true; }
+  S.nights.push(n);
+  const pool = demo ? sampleNights() : realNights();
+  const st = demo ? Object.assign({}, S.settings) : S.settings;      // a 시연 night never changes the real settings
+  lastAdjust = nextAdjust(n, pool, st);
+  if (cleared) lastAdjust.push('예시 기록을 지우고 내 기록을 시작했습니다.');
+  S.tonight = null; C = null; save(); go('done');
+}
+function done() {
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>다음 밤에는 이렇게 바꿉니다</h2><p class="small">오늘 아침에 남긴 답이 내일 루틴에 반영됩니다.</p></section>
+  <ul class="adj">${lastAdjust.map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+  <div class="stack"><button class="btn" data-act="toRecords">기록 보기</button><button class="btn ghost" data-act="home">처음으로</button></div>`;
+}
+
+/* ---------------------------------------------------------------- records */
+function records() {
+  const real = realNights(), ex = !real.length, list = (ex ? sampleNights() : real).slice(-7);
+  const base = ex ? S.sampleBaseline : S.baseline, a = list.length ? Math.round(avg(list.map(n => n.latency))) : null;
+  const fr = list.length ? (avg(list.map(n => n.fresh))).toFixed(1) : null, diff = a != null && base != null ? base - a : null;
+  const by = {}; list.forEach(n => (by[n.combo] = by[n.combo] || []).push(n.latency));
+  let best = null; for (const k in by) if (by[k].length >= 2) { const v = avg(by[k]); if (!best || v < best.v) best = { k, v }; }
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>잠드는 데 걸린 시간</h2></section>
+  ${ex && list.length ? '<div class="banner">아래는 예시 기록입니다. 첫 아침 체크를 남기면 지워지고 내 기록으로 바뀝니다.</div>' : ''}
+  ${!list.length ? '<div class="card"><div class="big">아직 기록이 없습니다</div><div class="why">오늘 밤 루틴으로 자고 아침 체크를 남기면 여기에 쌓입니다.</div></div>' : `
+  <div class="sum">
+    <div class="card"><h3>최근 ${list.length}일 평균</h3><div class="n">${a}<small>분</small></div></div>
+    <div class="card"><h3>사용 전 평소</h3><div class="n">${base != null ? base : '–'}<small>분</small></div></div>
+  </div>
+  <p class="lead">${diff == null ? '' : diff > 0 ? `사용 전보다 평균 ${diff}분 빨리 잠들었습니다.` : diff < 0 ? `사용 전보다 평균 ${-diff}분 더 걸렸습니다. 소리와 줄이는 시점을 계속 조정합니다.` : '사용 전과 같습니다.'} 아침 개운함은 평균 ${fr}/5입니다.${list.length < 3 ? ' 3일 이상 기록하면 비교가 더 정확해집니다.' : ''}</p>
+  <figure class="chart">${chart(list, base)}</figure>
+  ${best ? `<div class="card"><h3>가장 빨리 잠든 조합</h3><div class="big">${esc(comboName(best.k))}</div><div class="why">평균 ${Math.round(best.v)}분</div></div>` : ''}
+  <div class="scroll"><table><thead><tr><th>날짜</th><th>소리</th><th>입면</th><th>개운함</th><th>행동</th></tr></thead><tbody>
+    ${list.slice().reverse().map(n => `<tr><td class="num">${+n.date.slice(5, 7)}/${+n.date.slice(8)}</td><td>${esc(comboName(n.combo))}</td><td class="num">${n.latency}분</td><td class="num">${n.fresh}/5</td><td class="num">${n.done.filter(Boolean).length}/${n.done.length}</td></tr>`).join('')}
+  </tbody></table></div>`}
+  <div class="stack">
+    ${ex && list.length ? '<button class="btn ghost" data-act="clearSample">예시 기록 지우기</button>' : ''}
+    ${real.length ? '<button class="btn ghost" data-act="askClear">내 기록 모두 지우기</button>' : ''}
+  </div>
+  <p class="small">${MEM ? '이 브라우저에서는 저장이 막혀 있어 창을 닫으면 기록이 사라집니다.' : '기록은 이 기기의 이 브라우저에만 저장됩니다. 서버로 보내지 않습니다.'}</p>`;
+}
+function chart(list, base) {
+  const W = 360, H = 190, top = 22, bot = 150, max = Math.max(60, base || 0, ...list.map(n => n.latency)), n = list.length;
+  const slot = (W - 40) / Math.max(n, 5), bw = Math.min(30, slot * .62), Y = v => bot - (bot - top) * v / max;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="최근 ${n}일 동안 잠드는 데 걸린 시간 막대그래프">`;
+  [0, 30, 60].filter(v => v <= max).forEach(v => { s += `<line x1="30" x2="${W}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(142,160,255,.2)"/><text x="24" y="${Y(v) + 4}" text-anchor="end">${v}</text>`; });
+  list.forEach((d, i) => { const x = 36 + slot * i + (slot - bw) / 2, y = Y(d.latency), lastOne = i === n - 1;
+    s += `<rect x="${x}" y="${y}" width="${bw}" height="${bot - y}" rx="5" fill="${lastOne ? '#FFD88A' : 'rgba(142,160,255,.6)'}"/><text class="v" x="${x + bw / 2}" y="${y - 6}" text-anchor="middle">${d.latency}</text><text x="${x + bw / 2}" y="${bot + 16}" text-anchor="middle">${+d.date.slice(5, 7)}/${+d.date.slice(8)}</text>`; });
+  if (base != null) s += `<line x1="30" x2="${W}" y1="${Y(base)}" y2="${Y(base)}" stroke="#E9ECFF" stroke-dasharray="4 4"/><text x="${W}" y="${Y(base) - 5}" text-anchor="end" fill="#E9ECFF">사용 전 ${base}분</text>`;
+  return s + `<text x="24" y="${H - 6}" text-anchor="end">분</text></svg>`;
+}
+
+function watch() {
+  const P = watchPlan(WATCH), f = fromMin, d = WATCH.date, W = 360, L = 70, R = 352, X = m => L + (m - P.t0) * (R - L) / (P.end - P.t0);
+  const rows = { awake: 12, rem: 38, core: 64, deep: 90 }, top = 126, bot = 172, Y = v => bot - (bot - top) * v;
+  const poly = pts => pts.map(([m, v]) => X(m).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ');
+  let g = `<svg viewBox="0 0 ${W} 196" role="img" aria-label="웨어러블이 기록한 수면 단계와 그에 맞춰 바뀐 소리 크기">`;
+  Object.keys(rows).forEach(k => { g += `<text x="0" y="${rows[k] + 13}">${STAGE[k][0]}</text><line x1="${L}" x2="${R}" y1="${rows[k] + 22}" y2="${rows[k] + 22}" stroke="rgba(142,160,255,.16)"/>`; });
+  P.seg.forEach(x => { g += `<rect x="${X(x.s).toFixed(1)}" y="${rows[x.k]}" width="${Math.max(1.6, X(x.e) - X(x.s)).toFixed(1)}" height="18" rx="3" fill="${STAGE[x.k][1]}"/>`; });
+  g += `<text x="0" y="${top + 16}" class="v">수면 음악</text><text x="0" y="${top + 30}" class="v">소리 크기</text><line x1="${L}" x2="${R}" y1="${top}" y2="${top}" stroke="rgba(142,160,255,.16)"/>`;
+  g += `<polygon points="${X(P.t0)},${bot} ${poly(P.snd)} ${X(P.end)},${bot}" fill="rgba(142,160,255,.3)"/><polyline points="${poly(P.snd)}" fill="none" stroke="#B9C4FF" stroke-width="3.2"/>`;
+  g += `<polygon points="${X(P.wakeStart)},${bot} ${poly(P.wk)} ${X(P.end)},${bot}" fill="rgba(255,216,138,.25)"/><polyline points="${poly(P.wk)}" fill="none" stroke="#FFD88A" stroke-width="2"/>`;
+  for (let h = Math.ceil(P.t0 / 60); h * 60 <= P.end; h++) g += `<text x="${X(h * 60)}" y="190" text-anchor="middle">${h % 24}시</text>`;
+  g += '</svg>';
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>실제 웨어러블 기록에 맞춰 바뀌는 소리</h2>
+    <p class="lead">${WATCH.who}입니다. ${+d.slice(5, 7)}월 ${+d.slice(8)}일 밤에 웨어러블이 남긴 수면 단계를 넣으면, SLEEP:ON은 단계가 바뀔 때마다 소리를 이렇게 바꿉니다.</p></section>
+  <figure class="chart">${g}<figcaption>위 네 줄은 웨어러블 기록, 아래는 그에 맞춰 바뀐 소리 크기입니다. 얕은 잠은 Apple 건강 앱의 '코어 수면'입니다.</figcaption></figure>
+  <div class="sum">
+    <div class="card"><h3>소리를 바꾼 횟수</h3><div class="n">${P.changes}<small>번</small></div><div class="why">${f(P.first)}~${f(P.last)} 기록 기준</div></div>
+    <div class="card"><h3>소리를 끈 시간</h3><div class="n">${P.quiet}<small>분</small></div><div class="why">깊은 잠 구간</div></div>
+  </div>
+  <button class="btn" data-act="playWatch">소리와 함께 1분으로 듣기</button>
+  <div class="scroll"><table><thead><tr><th>웨어러블이 읽은 상태</th><th>SLEEP:ON 소리</th><th>크기</th></tr></thead><tbody>
+    ${['pre', 'core', 'deep', 'rem', 'awake', 'wake'].map(k => `<tr><td>${RESP[k].state}</td><td>${RESP[k].sound}<br><span class="small">${RESP[k].why}</span></td><td class="num">${k === 'wake' ? '점점 크게' : k === 'deep' ? '0%' : pct(RESP[k].lv)}</td></tr>`).join('')}
+  </tbody></table></div>
+  <details class="card"><summary>바뀐 시각 모두 보기 (${P.ev.length}줄)</summary>
+    <ol class="log all" style="margin-top:10px">${P.ev.map((e, i) => `<li><i>${i + 1}</i><time>${f(e.m)}</time><span>${esc(e.text)}</span></li>`).join('')}</ol></details>
+  <div class="card"><h3>이 기록으로 본 것</h3>
+    <ul class="acts">
+      <li><div><strong>밤중에 깬 ${P.handled + P.skipped}번 가운데 ${P.handled}번에 다시 잠드는 소리를 틉니다</strong><span>2분 안에 다시 잠든 ${P.skipped}번은 넘깁니다. 시간으로만 끄는 타이머는 이때 아무것도 하지 않습니다.</span></div></li>
+      <li><div><strong>기상 소리는 ${f(P.wakeStart)}에 시작합니다</strong><span>목표 ${WATCH.target}의 30분 전부터 살폈고, 그 시각의 기록이 얕은 잠이었습니다.</span></div></li>
+    </ul></div>
+  <div class="card"><h3>아직 아닌 것</h3>
+    <ul class="acts">
+      <li><div><strong>실시간 연동이 아닙니다</strong><span>웨어러블이 이미 남긴 기록을 나중에 넣어 본 결과입니다. 자는 동안 바로 반응하려면 Apple Watch 앱이 심박과 움직임으로 상태를 직접 추정해야 합니다.</span></div></li>
+      <li><div><strong>상태별 값은 시작값입니다</strong><span>지금은 정해 둔 규칙으로 바꿉니다. 사람마다 맞는 소리와 크기를 기록으로 학습하는 부분은 앱에서 만듭니다.</span></div></li>
+      <li><div><strong>시각은 몇 분 틀릴 수 있습니다</strong><span>건강 앱 화면의 그래프에서 옮겨 적었습니다. 단계별 합계는 앱에 표시된 값과 1분 안쪽으로 맞습니다.</span></div></li>
+    </ul></div>
+  <button class="link" data-act="home">처음으로</button>`;
+}
+
+function about() {
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>이 웹 MVP가 하는 일</h2>
+    <p class="lead">SLEEP:ON은 잠드는 데 30분 넘게 걸리는 사람을 위한 수면 루틴 앱입니다. 핵심은 웨어러블이 읽은 수면 상태에 맞춰 소리를 바꾸는 것이고, 이 웹 버전은 그 흐름을 앱보다 먼저 써 볼 수 있게 만든 것입니다.</p></section>
+  <div class="scroll"><table><thead><tr><th>단계</th><th>지금 웹에서</th><th>iPhone·Apple Watch 앱에서</th></tr></thead><tbody>
+    <tr><td>오늘 밤 루틴</td><td>네 가지 답과 지난 기록으로 소리, 행동, 취침 시각을 정합니다.</td><td>기록이 쌓이면 개인별 규칙 학습</td></tr>
+    <tr><td>잠든 뒤 소리</td><td>웨어러블이 남긴 실제 기록을 넣으면 단계마다 소리를 바꿉니다. 직접 잘 때는 정해 둔 시간 뒤에 줄이고, 깨면 버튼으로 알립니다.</td><td>Apple Watch의 심박과 움직임으로 자는 동안 바로 판정하고, 사람마다 값을 학습</td></tr>
+    <tr><td>기상</td><td>목표 시각부터 5분에 걸쳐 새소리와 멜로디가 커집니다.</td><td>목표 30분 전부터 얕은 잠을 찾아 깨움</td></tr>
+    <tr><td>아침 체크</td><td>입면 시간과 개운함을 남기면 다음 밤 설정이 바뀌고 사용 전과 비교합니다.</td><td>센서 기록과 함께 14일 전후 비교</td></tr>
+  </tbody></table></div>
+  <div class="card"><h3>알아 둘 점</h3>
+    <ul class="acts">
+      <li><div><strong>화면을 켜 둔 채 충전기에 연결해 주세요</strong><span>웹에서는 화면이 꺼지면 기상 소리가 울리지 않을 수 있습니다. 수면 화면은 20초 뒤 스스로 어두워집니다.</span></div></li>
+      <li><div><strong>소리는 모두 이 기기에서 만들어집니다</strong><span>빗소리, 파도, 브라운 노이즈, 핑크 노이즈, 바람, 느린 앰비언트 여섯 가지입니다.</span></div></li>
+      <li><div><strong>기록은 이 브라우저에만 남습니다</strong><span>가입이 없고 서버로 보내지 않습니다. 다른 기기에서는 보이지 않습니다.</span></div></li>
+      <li><div><strong>치료나 진단을 하지 않습니다</strong><span>수면 습관을 돕는 도구입니다. 잠을 못 자는 날이 길게 이어지면 의료기관과 상담해 주세요.</span></div></li>
+    </ul></div>
+  <button class="btn ghost" data-act="toWatch">실제 웨어러블 기록으로 보기</button>`;
+}
+
+/* ---------------------------------------------------------------- actions */
+const ACT = {
+  home() { go('home'); }, toCheck() { go('check'); }, toWatch() { go('watch'); }, playWatch() { startNight('watch'); }, toRoutine() { go('routine'); }, toRecords() { location.hash = 'records'; go('records'); },
+  set(el) { const k = el.dataset.k; C[k] = +el.dataset.v; go('check', true); },
+  makeRoutine() {
+    C.end = $('#endTime').value || C.end; C.wake = $('#wakeTime').value || C.wake;
+    if (S.baseline == null) S.baseline = C.baseline;
+    S.settings.wake = C.wake;
+    const check = { tension: C.tension, fatigue: C.fatigue, end: C.end, wake: C.wake };
+    S.tonight = { check, routine: buildRoutine(check, realNights(), { baseline: S.baseline, bedShift: S.settings.bedShift, fadeAfter: S.settings.fadeAfter }), example: false };
+    save(); go('routine');
+  },
+  recheck() { S.tonight = null; save(); go('check'); },
+  preview() { const r = S.tonight.routine;
+    if (previewing) { Sound.stopAll(); previewing = false; }
+    else if (Sound.start(r.layers)) { Sound.ramp(.9, 1); previewing = true; }
+    else toast('이 브라우저에서는 소리를 낼 수 없습니다.');
+    go('routine', true); },
+  startReal() { startNight('real'); }, startDemo() { startNight('demo'); },
+  demo() {
+    if (!S.tonight || !S.tonight.routine) { const check = { tension: 2, fatigue: 1, end: '22:30', wake: '07:00' };
+      const ex = !realNights().length; S.tonight = { check, routine: buildRoutine(check, ex ? sampleNights() : realNights(), { baseline: ex ? S.sampleBaseline : S.baseline }), example: ex }; }
+    startNight('demo');
+  },
+  stillAwake() { sess.extends++; logEv(nowLabel(), '깨어 있다고 알림. 소리를 10분 더 틉니다.'); armFade(10); },
+  resleep() { const m = S.settings.resleepMin; sess.resleeps++; clearLater(); Sound.start(S.tonight.routine.layers); Sound.plan(.35, 2, m * 60, 120);
+    logEv(nowLabel(), `밤중에 깸. 작은 소리를 ${m}분 틉니다.`); setPhase('resleep', '작은 소리로 다시 잠들도록 돕습니다.');
+    later(m * 60 + 120, () => { Sound.silence(); logEv(nowLabel(), '무음으로 돌아갑니다.'); setPhase('silent', `${S.tonight.routine.wake}까지 조용히 둡니다.`); }); },
+  wakeUp() { endNight(); },
+  m(el) { const k = el.dataset.k, v = +el.dataset.v; if (k === 'done') M.done[+el.dataset.i] = !!v; else if (k === 'woke') M.woke = !!v; else M[k] = v; go('morning', true); },
+  saveMorning, skipMorning() { S.tonight = null; C = null; save(); go('home'); },
+  clearSample() { S.nights = S.nights.filter(n => !n.sample); save(); go('records'); },
+  askClear(el) { if (el.dataset.sure) { S.nights = S.nights.filter(n => n.sample); S.baseline = null; S.settings = Object.assign({}, DEFAULT.settings); save(); go('records'); } else { el.dataset.sure = '1'; el.textContent = '한 번 더 누르면 모두 지웁니다'; } },
+};
+document.addEventListener('click', e => {
+  if (sess) { const wasDim = sess.mode === 'real' && sess.phase !== 'waking' && Date.now() > sess.dimAt; sess.dimAt = Date.now() + 20000; if (wasDim) { tick(); return; } }   // first tap only wakes the screen
+  const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+  const f = ACT[el.dataset.act]; if (f) f(el);
+});
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'vol') { S.settings.volume = t.value / 100; Sound.volume(S.settings.volume); save(); }
+  else if (t.dataset.layer && S.tonight) { S.tonight.routine.layers[t.dataset.layer] = t.value / 100; if (previewing) Sound.setLayer(t.dataset.layer, t.value / 100); save(); }
+  else if (t.id === 'endTime' && C) C.end = t.value; else if (t.id === 'wakeTime' && C) C.wake = t.value;
+});
+document.addEventListener('visibilitychange', () => { if (sess && !document.hidden) tick(); });
+
+window.sleeponPlan = () => ({ plan: watchPlan(WATCH), resp: RESP, watch: WATCH });   // read-only, used to draw the same result elsewhere
+const h0 = location.hash.replace('#', '');
+go(h0 === 'records' || h0 === 'about' || h0 === 'watch' ? h0 : 'home');
+})();
+</script>
+</body>
+</html>

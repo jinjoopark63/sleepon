@@ -305,14 +305,14 @@ const WATCH = { who: '대표자의 웨어러블(Apple Watch) 기록', date: '202
     ['core','04:11','04:24'],['rem','04:24','04:56'],['core','04:56','05:08'],['deep','05:08','05:33'],['core','05:33','06:48'],['rem','06:48','07:19'],
     ['core','07:19','08:16'],['rem','08:16','08:26'],['awake','08:26','08:38'],['core','08:38','08:44']] };
 const STAGE = { awake: ['깸', '#FF9B8E'], rem: ['REM(꿈 수면)', '#6FD0F5'], core: ['얕은 잠', '#5E8FF2'], deep: ['깊은 잠', '#8B7BEE'] };
-// what the sound does for each state the watch reports (starting values; the app is meant to tune them per person)
+// what the sound does at each moment of the night (starting values; the app tunes them per person from morning records)
+const LEARN_LAT = 13;   // 이 사람의 지난 기록으로 학습한 '평소 잠드는 데 걸리는 시간'(분)
 const RESP = {
-  pre:    { lv: 1,   mix: null,                         pill: '잠들기 전 · 잠드는 소리',      state: '잠들기 전',            sound: '잠드는 소리',   why: '박자가 있는 소리로 잠드는 것을 돕습니다.' },
-  core:   { lv: .2,  mix: { brown: .9 },                pill: '얕은 잠 · 잔잔한 배경음',      state: '얕은 잠',              sound: '잔잔한 배경음',         why: '깨기 쉬운 단계라 주변 소음을 가립니다.' },
-  deep:   { lv: 0,   mix: { brown: .9 },                pill: '깊은 잠 · 소리 끔',             state: '깊은 잠',              sound: '소리 끔',                why: '소리가 필요 없는 구간이라 끕니다.' },
-  rem:    { lv: .1,  mix: { brown: .9 },                pill: '꿈 수면 · 아주 작은 배경음',     state: 'REM(꿈 수면)',                  sound: '아주 작은 배경음',    why: '변화가 있는 소리는 피하고 일정하게만 둡니다.' },
-  awake:  { lv: .35, mix: { ambient: .8, brown: .35 },  pill: '깸 · 다시 잠드는 소리',      state: '2분 넘게 깸',          sound: '다시 잠드는 소리',    why: '느린 화음으로 다시 잠들도록 돕습니다.' },
-  wake:   { lv: 0,   mix: null,                         pill: '깨우는 중',                  state: '기상 30분 전 얕은 잠', sound: '기상 소리',           why: '새소리에서 멜로디로 조금씩 키웁니다.' },
+  pre:   { lv: 1,   mix: null,                        pill: '잠들기 전 · 오늘 밤 소리',  why: '취침 시간에 자동으로 시작해 오늘 밤 만든 소리를 틉니다.' },
+  fade:  { lv: 0,   mix: null,                        pill: '잠듦 예측 · 줄이고 끔',     why: '평소 잠드는 시간이 지나 5분에 걸쳐 줄이고 끕니다. 밤새 틀지 않습니다.' },
+  awake: { lv: .35, mix: { ambient: .8, brown: .35 }, pill: '깸 · 다시 잠드는 소리',     why: '깨서 버튼을 한 번 누르면(암밴드 연구 모드는 자동) 작은 소리를 다시 틉니다.' },
+  off:   { lv: 0,   mix: null,                        pill: '다시 끔 · 아침까지 조용히', why: '5분 뒤부터 줄여 끄고 아침까지 조용히 둡니다.' },
+  wake:  { lv: 0,   mix: null,                        pill: '깨우는 중',                 why: '새소리에서 멜로디로 조금씩 키웁니다.' },
 };
 const pct = v => Math.round(v * 100) + '%';
 function watchPlan(rec) {
@@ -320,24 +320,30 @@ function watchPlan(rec) {
   const seg = rec.seg.map(([k, a, b]) => { let s0 = toMin(a), e0 = toMin(b); while (s0 < prev) s0 += 1440; while (e0 < s0) e0 += 1440; prev = e0; return { k, s: s0, e: e0 }; });
   let tgt = toMin(rec.target); while (tgt < seg[0].s) tgt += 1440;
   const f = fromMin, t0 = seg[0].s - 10, last = seg[seg.length - 1].e, at = m => { const x = seg.find(x => m >= x.s && m < x.e); return x ? x.k : null; };
-  let wakeStart = tgt, why = null;                                                                      // 목표 30분 전부터 얕은 잠을 찾음
+  let wakeStart = tgt, why = null;                                                                      // 목표 30분 전부터 얕은 잠을 찾음(앱에서는 Apple Watch가 실시간으로)
   for (let m = tgt - 30; m < tgt; m++) { const k = at(m); if (k === 'core' || k === 'awake' || k === null) { wakeStart = m; why = k === 'core' ? '얕은 잠이라' : '이미 깨어 있어'; break; } }
-  const first = seg.find(x => x.k !== 'awake'), fadeStart = first.s + 3;                                // 잠듦 신호가 3분 이어지면 바꾸기 시작
-  const ev = [{ m: t0, key: 'pre', text: `루틴 소리 재생 중. 웨어러블 기록은 ${f(seg[0].s)}부터 있습니다.` }];
-  const snd = [[t0, 1], [fadeStart, 1]]; let cur = 1, handled = 0, skipped = 0;
-  const go = (m, key, ramp, text) => { if (m >= wakeStart) return; const lv = RESP[key].lv; ev.push({ m, key, text }); snd.push([m, cur], [Math.min(m + ramp, wakeStart), lv]); cur = lv; };
+  const onset = seg.find(x => x.k !== 'awake').s;                       // 아침에 읽는 실제 잠든 시각
+  const fadeStart = t0 + LEARN_LAT, offAt = fadeStart + 5;              // 학습된 평소 입면 시간으로 예측
+  const ev = [{ m: t0, key: 'pre', text: '취침 시간에 자동 시작. 오늘 밤 만든 소리를 틉니다.' },
+              { m: fadeStart, key: 'fade', text: `학습된 평소 잠드는 시간(${LEARN_LAT}분)이 지남. 5분에 걸쳐 줄이고 ${f(offAt)}에 끕니다.` }];
+  const snd = [[t0, 1], [fadeStart, 1], [offAt, 0]];
+  const arm = [[t0, 1], [onset + 3, 1], [onset + 5, 0]];               // 암밴드 연구 모드: 잠듦이 3분 이어지면 바로 줄여 끔
+  let handled = 0, skipped = 0, onMin = offAt - t0;
   seg.forEach(x => {
-    if (x === first) { go(fadeStart, x.k, 5, `잠듦 신호가 3분 이어짐. 5분에 걸쳐 ${RESP[x.k].sound}으로 바꿉니다.`); return; }
-    if (x.s < fadeStart + 5) return;
-    if (x.k === 'awake') { if (x.s >= wakeStart) return; if (x.e - x.s > 2) { handled++; go(x.s + 2, 'awake', .5, '깸 신호가 2분 넘게 이어짐. 다시 잠드는 소리를 틉니다.'); } else skipped++; return; }
-    const lv = RESP[x.k].lv; if (lv === cur && ev[ev.length - 1].key === x.k) return;
-    go(x.s, x.k, 2, `${RESP[x.k].state.replace('REM(꿈 수면)', '꿈 수면')} 신호. ${x.k === 'deep' ? '소리를 끕니다.' : RESP[x.k].sound + '(' + pct(lv) + ')으로 바꿉니다.'}`); });
+    if (x.k !== 'awake' || x.s < offAt || x.s >= wakeStart) return;
+    if (x.e - x.s <= 2) { skipped++; return; }
+    handled++; const m = x.s + 2, end = m + 10;
+    ev.push({ m, key: 'awake', text: '깨서 버튼 한 번(암밴드 연구 모드는 자동). 다시 잠드는 소리(35%)를 틉니다.' });
+    ev.push({ m: m + 5, key: 'off', text: `5분 뒤부터 줄여 ${f(end)}에 끕니다. 이후 아침까지 소리를 켜지 않습니다.` });
+    snd.push([m, 0], [m + .5, .35], [m + 5, .35], [end, 0]); onMin += 10;
+    arm.push([m, 0], [m + .5, .35], [x.e + 3, .35], [x.e + 4, 0]);
+  });
   const ramp = clamp(tgt - wakeStart, 5, 10), end = Math.max(last, wakeStart + ramp);
-  ev.push({ m: wakeStart, key: 'wake', text: why ? `목표 ${rec.target}의 ${tgt - wakeStart}분 전, ${why} 기상 소리를 시작합니다.` : `목표 ${rec.target}. 얕은 잠을 찾지 못해 목표 시각에 기상 소리를 시작합니다.` });
-  snd.push([wakeStart, cur], [wakeStart + 1, 0], [end, 0]);
+  ev.push({ m: wakeStart, key: 'wake', text: why ? `목표 ${rec.target}의 ${tgt - wakeStart}분 전. 워치가 심박·움직임으로 ${why} 기상 소리를 시작합니다.` : `목표 ${rec.target}. 얕은 잠을 찾지 못해 목표 시각에 기상 소리를 시작합니다.` });
+  snd.push([wakeStart, 0], [end, 0]); arm.push([wakeStart, 0], [end, 0]);
   const tot = {}; seg.forEach(x => { tot[x.k] = (tot[x.k] || 0) + x.e - x.s; });
-  let quiet = 0; for (let i = 1; i < snd.length; i++) if (snd[i][1] === 0 && snd[i - 1][1] === 0 && snd[i][0] <= wakeStart) quiet += snd[i][0] - snd[i - 1][0];
-  return { seg, t0, end, ev, snd, wk: [[wakeStart, 0], [wakeStart + ramp, 1], [end, 1]], tot, handled, skipped, wakeStart, tgt, fadeStart, ramp, first: seg[0].s, last, quiet: Math.round(quiet), changes: ev.length - 1 };
+  const morning = `건강 앱 기록을 읽어 실제 잠든 시각 ${f(onset)}과 예측 ${f(fadeStart)}을 비교(${Math.abs(fadeStart - onset)}분 차이), 다음 밤 끄는 시점을 고칩니다.`;
+  return { seg, t0, end, ev, snd, arm, wk: [[wakeStart, 0], [wakeStart + ramp, 1], [end, 1]], tot, handled, skipped, wakeStart, tgt, fadeStart, offAt, onset, ramp, first: seg[0].s, last, onMin, morning, changes: ev.length - 1 };
 }
 
 /* ---------------------------------------------------------------- sound, generated in the browser */
@@ -474,8 +480,8 @@ function home() {
   const t = S.tonight, last = realNights().slice(-1)[0];
   view.innerHTML = `
   <section class="stack" style="gap:14px;padding-top:14px">
-    <h1>잠이 바뀌면<br>소리도 바뀝니다</h1>
-    <p class="lead">웨어러블이 읽은 수면 상태에 맞춰 소리를 낮추고, 끄고, 다시 틉니다. 무엇을 틀지 고르는 일도, 끄는 일도 맡기세요.</p>
+    <h1>잠들면 끄고,<br>얕은 잠에 깨웁니다</h1>
+    <p class="lead">오늘 밤 소리를 만들어 틀고, 잠들 무렵 줄여서 끕니다. 밤새 틀지 않고, 아침 기록으로 다음 밤 끄는 시점을 고칩니다.</p>
   </section>
   ${t && t.routine ? `<div class="card"><span class="tag">오늘 밤 루틴 준비됨</span><div class="big">${esc(comboName(t.routine.combo))}</div><div class="why">${t.routine.bed}에 눕고 ${t.routine.wake}에 일어납니다.</div></div>` : ''}
   <div class="stack">
@@ -484,12 +490,12 @@ function home() {
   </div>
   <ol class="steps">
     <li><b>1</b><div><strong>오늘 밤 루틴</strong><span>긴장도, 피로도, 일정, 기상 시각으로 소리와 행동과 취침 시각을 정합니다.</span></div></li>
-    <li><b>2</b><div><strong>수면 상태에 맞춰 바뀌는 소리</strong><span>얕은 잠에는 낮은 연속음, 깊은 잠에는 무음, 깨면 다시 잠드는 소리로 바꿉니다.</span></div></li>
-    <li><b>3</b><div><strong>천천히 깨우는 기상</strong><span>새소리에서 멜로디로, 몇 분에 걸쳐 조금씩 커집니다.</span></div></li>
-    <li><b>4</b><div><strong>아침 체크</strong><span>잠드는 데 걸린 시간과 개운함을 남기면 다음 밤 루틴이 바뀝니다.</span></div></li>
+    <li><b>2</b><div><strong>잠들면 줄이고 끄기</strong><span>평소 잠드는 시간에 맞춰 줄이고 끕니다. 밤새 트는 소리는 꿈 수면(REM)을 줄인다는 연구가 있어 켜 두지 않습니다. 깨면 버튼 한 번으로 다시 틉니다.</span></div></li>
+    <li><b>3</b><div><strong>얕은 잠에 천천히 깨우기</strong><span>기상 30분 전부터 Apple Watch가 심박과 움직임으로 얕은 잠을 찾아 새소리에서 멜로디로 깨웁니다.</span></div></li>
+    <li><b>4</b><div><strong>아침에 배우기</strong><span>건강 앱 기록과 아침 체크로 실제 잠든 시각을 확인해 다음 밤 끄는 시점과 소리를 고칩니다.</span></div></li>
   </ol>
   ${last ? `<div class="card"><h3>지난 기록</h3><div class="big">${last.latency}분 만에 잠듦 · 개운함 ${last.fresh}/5</div></div>` : ''}
-  <p class="small">웹 MVP는 웨어러블이 남긴 기록을 넣어 보거나, 웨어러블 없이 타이머와 버튼으로 쓸 수 있습니다. 치료나 진단을 위한 서비스가 아닙니다.</p>`;
+  <p class="small">웹 MVP는 웨어러블이 남긴 기록에 규칙을 적용해 보거나, 웨어러블 없이 예측 시각과 버튼으로 쓸 수 있습니다. 잠드는 순간을 실시간으로 감지하는 기능은 암밴드로 2027년에 시험합니다. 치료나 진단을 위한 서비스가 아닙니다.</p>`;
 }
 
 function check() {
@@ -544,7 +550,7 @@ function routine() {
     <ul class="acts">${r.actions.map(k => `<li><div><strong>${ACTION[k][0]}</strong><span>${ACTION[k][1]}</span></div></li>`).join('')}</ul></div>
   <div class="card"><h3>시각</h3>
     <div class="plan"><div><span class="small">눕기</span><span class="t">${r.bed}</span></div><span class="arrow">→</span><div><span class="small">일어나기</span><span class="t">${r.wake}</span></div></div>
-    <div class="why">예상 수면 ${hm(r.sleepMin)}. ${r.late ? '일정이 늦게 끝나 권장보다 짧습니다. ' : ''}소리는 누운 뒤 ${r.fadeAfter}분부터 5분에 걸쳐 줄어듭니다${r.usedHistory ? ` (최근 ${r.usedHistory}일 평균 입면 ${r.lat}분 기준)` : ''}.</div>
+    <div class="why">예상 수면 ${hm(r.sleepMin)}. ${r.late ? '일정이 늦게 끝나 권장보다 짧습니다. ' : ''}소리는 누운 뒤 ${r.fadeAfter}분부터 5분에 걸쳐 줄이고 끕니다${r.usedHistory ? ` (최근 ${r.usedHistory}일 평균 입면 ${r.lat}분 기준)` : ''}.</div>
   </div>
   <div class="stack">
     <button class="btn" data-act="startReal">이대로 수면 시작</button>
@@ -598,12 +604,12 @@ function runDemo(r) {
   sess.keys = [[0, bedR], [9, bedR + 18], [16, bedR + 23], [26, mid], [33, mid + 8], [43, wakeR - 19], [58, wakeR - 12]]; sess.span = 60000;
   Sound.ramp(1, 2);
   logEv(unrel(bedR), '수면 시작. 소리를 틉니다.');
-  setPhase('awake', '시연입니다. 웨어러블이 보낼 신호를 정해 둔 순서로 흉내 냅니다.');
-  later(9, () => { Sound.ramp(0, 7); Sound.tempo(48); logEv(unrel(bedR + 18), '잠듦 신호. 음량과 박자를 줄입니다.'); setPhase('fading', '잠든 것을 알아채고 소리를 줄이고 있습니다.'); });
+  setPhase('awake', '시연입니다. 하룻밤의 흐름을 정해 둔 순서로 보여 줍니다.');
+  later(9, () => { Sound.ramp(0, 7); Sound.tempo(48); logEv(unrel(bedR + 18), '평소 잠드는 시간이 지남. 음량과 박자를 줄입니다.'); setPhase('fading', '잠드셨을 시각이라 소리를 줄여 끕니다.'); });
   later(16, () => { logEv(unrel(bedR + 23), '무음으로 바꿨습니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
-  later(26, () => { Sound.ramp(.35, 1.5); logEv(unrel(mid), '뒤척임이 늘어 깬 것으로 봅니다. 작은 소리를 다시 틉니다.'); setPhase('resleep', '밤중에 깨면 작은 소리로 다시 잠들도록 돕습니다.'); });
-  later(33, () => { Sound.ramp(0, 4); logEv(unrel(mid + 8), '다시 잠듦 신호. 무음으로 돌아갑니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
-  later(43, () => { beginWake(`얕은 잠 신호. 목표 ${r.wake}보다 19분 먼저 깨우기 시작합니다.`, 10); });
+  later(26, () => { Sound.ramp(.35, 1.5); logEv(unrel(mid), '깨서 버튼을 눌렀습니다. 작은 소리를 다시 틉니다.'); setPhase('resleep', '밤중에 깨면 버튼 한 번으로 작은 소리를 다시 틉니다(암밴드 연구 모드는 자동).'); });
+  later(33, () => { Sound.ramp(0, 4); logEv(unrel(mid + 8), '정해 둔 시간이 지나 다시 줄여 끕니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
+  later(43, () => { beginWake(`기상 30분 안, 얕은 잠 신호(Apple Watch). 목표 ${r.wake}보다 19분 먼저 깨우기 시작합니다.`, 10); });
   later(75, () => { if (sess && sess.phase === 'waking') endNight(); });
 }
 function runWatch() {
@@ -611,9 +617,9 @@ function runWatch() {
   P.ev.forEach((e, i) => { const at = T, R = RESP[e.key]; sess.keys.push([at, e.m]);
     later(at, () => {
       if (e.key === 'wake') { sess.pill = R.pill; beginWake(e.text, 10); return; }
-      if (i === 0) Sound.ramp(1, 2); else { Sound.morph(R.mix || base, 1.5); Sound.ramp(R.lv, i === 1 ? 3.5 : 1.5); Sound.tempo(48); }
+      if (i === 0) Sound.ramp(1, 2); else { if (R.mix) Sound.morph(R.mix, 1.5); Sound.ramp(R.lv, e.key === 'fade' || e.key === 'off' ? 3.5 : 1.5); Sound.tempo(48); }
       logEv(fromMin(e.m), e.text); sess.pill = R.pill; setPhase(e.key === 'pre' ? 'awake' : e.key === 'awake' ? 'resleep' : 'silent', R.why); });
-    T += i === 0 ? 4.5 : i === 1 ? 5 : e.key === 'awake' ? 4 : 2.8; });
+    T += i === 0 ? 4.5 : e.key === 'fade' ? 6 : e.key === 'awake' ? 5 : 5; });
   sess.keys.push([T + 14, P.wakeStart + P.ramp]); sess.span = (T + 16) * 1000;
   later(T + 26, () => { if (sess) endNight(); });
 }
@@ -665,7 +671,7 @@ function sleep() {
 function paintSleep() {
   const pill = $('#phase'); if (!pill || !sess) return;
   const rec = sess.mode === 'watch', demo = sess.mode === 'demo' || rec, p = sess.phase;
-  pill.textContent = sess.pill ? sess.pill : demo && p === 'fading' ? '잠듦 감지 · 소리 줄이는 중' : PH[p][0]; pill.classList.toggle('on', !!PH[p][1]);
+  pill.textContent = sess.pill ? sess.pill : demo && p === 'fading' ? '잠듦 예측 · 소리 줄이는 중' : PH[p][0]; pill.classList.toggle('on', !!PH[p][1]);
   $('#phaseNote').textContent = sess.note;
   let b = '';
   if (rec) b = '<button class="btn ghost" data-act="wakeUp">재생 끝내기</button>';
@@ -788,37 +794,45 @@ function watch() {
   const P = watchPlan(WATCH), f = fromMin, d = WATCH.date, W = 360, L = 70, R = 352, X = m => L + (m - P.t0) * (R - L) / (P.end - P.t0);
   const rows = { awake: 12, rem: 38, core: 64, deep: 90 }, top = 126, bot = 172, Y = v => bot - (bot - top) * v;
   const poly = pts => pts.map(([m, v]) => X(m).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ');
-  let g = `<svg viewBox="0 0 ${W} 196" role="img" aria-label="웨어러블이 기록한 수면 단계와 그에 맞춰 바뀐 소리 크기">`;
+  let g = `<svg viewBox="0 0 ${W} 196" role="img" aria-label="웨어러블이 기록한 수면 단계와 바뀐 규칙으로 조절한 소리 크기">`;
   Object.keys(rows).forEach(k => { g += `<text x="0" y="${rows[k] + 13}">${STAGE[k][0]}</text><line x1="${L}" x2="${R}" y1="${rows[k] + 22}" y2="${rows[k] + 22}" stroke="rgba(142,160,255,.16)"/>`; });
   P.seg.forEach(x => { g += `<rect x="${X(x.s).toFixed(1)}" y="${rows[x.k]}" width="${Math.max(1.6, X(x.e) - X(x.s)).toFixed(1)}" height="18" rx="3" fill="${STAGE[x.k][1]}"/>`; });
   g += `<text x="0" y="${top + 16}" class="v">수면 음악</text><text x="0" y="${top + 30}" class="v">소리 크기</text><line x1="${L}" x2="${R}" y1="${top}" y2="${top}" stroke="rgba(142,160,255,.16)"/>`;
   g += `<polygon points="${X(P.t0)},${bot} ${poly(P.snd)} ${X(P.end)},${bot}" fill="rgba(142,160,255,.3)"/><polyline points="${poly(P.snd)}" fill="none" stroke="#B9C4FF" stroke-width="3.2"/>`;
+  g += `<polyline points="${poly(P.arm.map(([m, v]) => [m, v + .04]))}" fill="none" stroke="#3DD6B5" stroke-width="2" stroke-dasharray="5 4"/>`;
   g += `<polygon points="${X(P.wakeStart)},${bot} ${poly(P.wk)} ${X(P.end)},${bot}" fill="rgba(255,216,138,.25)"/><polyline points="${poly(P.wk)}" fill="none" stroke="#FFD88A" stroke-width="2"/>`;
   for (let h = Math.ceil(P.t0 / 60); h * 60 <= P.end; h++) g += `<text x="${X(h * 60)}" y="190" text-anchor="middle">${h % 24}시</text>`;
   g += '</svg>';
+  const night = P.last - P.first, saved = Math.round((night - P.onMin) / 60 * 10) / 10;
+  const RULES = [['잠들기 전', '오늘 밤 만든 소리', '100%'], [`평소 잠드는 시간(${LEARN_LAT}분)이 지남`, '5분에 걸쳐 줄이고 끔', '0%'],
+    ['잠든 뒤', '끈 채로 둠<br><span class="small">밤새 트는 소음은 꿈 수면을 줄였다는 연구(Basner 2026)</span>', '0%'],
+    ['2분 넘게 깸', '버튼 한 번에 다시 잠드는 소리, 5분 뒤 줄여 끔<br><span class="small">암밴드 연구 모드는 자동</span>', '35%'],
+    ['기상 30분 전 얕은 잠', '기상 소리<br><span class="small">Apple Watch가 심박·움직임으로 실시간 확인</span>', '점점 크게'],
+    ['아침', '건강 앱 기록으로 실제 잠든 시각을 읽어 다음 밤 끄는 시점을 고침', '–']];
   view.innerHTML = `
-  <section class="stack" style="padding-top:8px"><h2>실제 웨어러블 기록에 맞춰 바뀌는 소리</h2>
-    <p class="lead">${WATCH.who}입니다. ${+d.slice(5, 7)}월 ${+d.slice(8)}일 밤에 웨어러블이 남긴 수면 단계를 넣으면, SLEEP:ON은 단계가 바뀔 때마다 소리를 이렇게 바꿉니다.</p></section>
-  <figure class="chart">${g}<figcaption>위 네 줄은 웨어러블 기록, 아래는 그에 맞춰 바뀐 소리 크기입니다. 얕은 잠은 Apple 건강 앱의 '코어 수면'입니다.</figcaption></figure>
+  <section class="stack" style="padding-top:8px"><h2>실제 수면 기록에 바뀐 규칙을 적용하면</h2>
+    <p class="lead">${WATCH.who}입니다. ${+d.slice(5, 7)}월 ${+d.slice(8)}일 밤 기록에 적용하면, 잠들 무렵 줄여서 끄고 밤새 조용히 둔 뒤 얕은 잠에 깨웁니다.</p></section>
+  <figure class="chart">${g}<figcaption>위 네 줄은 웨어러블 기록, 아래 실선은 지금 규칙의 소리 크기, 초록 점선은 2027년에 시험할 암밴드 실시간 모드입니다. 얕은 잠은 Apple 건강 앱의 '코어 수면'입니다.</figcaption></figure>
   <div class="sum">
-    <div class="card"><h3>소리를 바꾼 횟수</h3><div class="n">${P.changes}<small>번</small></div><div class="why">${f(P.first)}~${f(P.last)} 기록 기준</div></div>
-    <div class="card"><h3>소리를 끈 시간</h3><div class="n">${P.quiet}<small>분</small></div><div class="why">깊은 잠 구간</div></div>
+    <div class="card"><h3>소리를 켠 시간</h3><div class="n">${P.onMin}<small>분</small></div><div class="why">밤새 트는 방식보다 약 ${saved}시간 짧음</div></div>
+    <div class="card"><h3>잠든 시각 예측</h3><div class="n">${Math.abs(P.fadeStart - P.onset)}<small>분 차이</small></div><div class="why">예측 ${f(P.fadeStart)} · 실제 ${f(P.onset)}</div></div>
   </div>
   <button class="btn" data-act="playWatch">소리와 함께 1분으로 듣기</button>
-  <div class="scroll"><table><thead><tr><th>웨어러블이 읽은 상태</th><th>SLEEP:ON 소리</th><th>크기</th></tr></thead><tbody>
-    ${['pre', 'core', 'deep', 'rem', 'awake', 'wake'].map(k => `<tr><td>${RESP[k].state}</td><td>${RESP[k].sound}<br><span class="small">${RESP[k].why}</span></td><td class="num">${k === 'wake' ? '점점 크게' : k === 'deep' ? '0%' : pct(RESP[k].lv)}</td></tr>`).join('')}
+  <div class="scroll"><table><thead><tr><th>언제</th><th>SLEEP:ON 소리</th><th>크기</th></tr></thead><tbody>
+    ${RULES.map(([a, b, c]) => `<tr><td>${a}</td><td>${b}</td><td class="num">${c}</td></tr>`).join('')}
   </tbody></table></div>
-  <details class="card"><summary>바뀐 시각 모두 보기 (${P.ev.length}줄)</summary>
-    <ol class="log all" style="margin-top:10px">${P.ev.map((e, i) => `<li><i>${i + 1}</i><time>${f(e.m)}</time><span>${esc(e.text)}</span></li>`).join('')}</ol></details>
+  <details class="card"><summary>조절한 시각 모두 보기 (${P.ev.length + 1}줄)</summary>
+    <ol class="log all" style="margin-top:10px">${P.ev.map((e, i) => `<li><i>${i + 1}</i><time>${f(e.m)}</time><span>${esc(e.text)}</span></li>`).join('')}<li><i>${P.ev.length + 1}</i><time>아침</time><span>${esc(P.morning)}</span></li></ol></details>
   <div class="card"><h3>이 기록으로 본 것</h3>
     <ul class="acts">
-      <li><div><strong>밤중에 깬 ${P.handled + P.skipped}번 가운데 ${P.handled}번에 다시 잠드는 소리를 틉니다</strong><span>2분 안에 다시 잠든 ${P.skipped}번은 넘깁니다. 시간으로만 끄는 타이머는 이때 아무것도 하지 않습니다.</span></div></li>
+      <li><div><strong>밤중에 깬 ${P.handled + P.skipped}번 가운데 ${P.handled}번에 다시 잠드는 소리를 틉니다</strong><span>2분 안에 다시 잠든 ${P.skipped}번은 넘깁니다. 지금은 버튼으로, 암밴드 연구 모드에서는 자동으로 틉니다.</span></div></li>
       <li><div><strong>기상 소리는 ${f(P.wakeStart)}에 시작합니다</strong><span>목표 ${WATCH.target}의 30분 전부터 살폈고, 그 시각의 기록이 얕은 잠이었습니다.</span></div></li>
+      <li><div><strong>예측과 실제 잠든 시각이 ${Math.abs(P.fadeStart - P.onset)}분 차이입니다</strong><span>아침마다 이 차이로 다음 밤 끄는 시점을 고칩니다.</span></div></li>
     </ul></div>
   <div class="card"><h3>아직 아닌 것</h3>
     <ul class="acts">
-      <li><div><strong>실시간 연동이 아닙니다</strong><span>웨어러블이 이미 남긴 기록을 나중에 넣어 본 결과입니다. 자는 동안 바로 반응하려면 Apple Watch 앱이 심박과 움직임으로 상태를 직접 추정해야 합니다.</span></div></li>
-      <li><div><strong>상태별 값은 시작값입니다</strong><span>지금은 정해 둔 규칙으로 바꿉니다. 사람마다 맞는 소리와 크기를 기록으로 학습하는 부분은 앱에서 만듭니다.</span></div></li>
+      <li><div><strong>잠드는 순간을 실시간으로 감지하지는 않습니다</strong><span>Apple Watch의 수면 단계는 자는 동안 앱에 실시간으로 주어지지 않고 아침에 건강 앱에 기록됩니다. 그래서 지금은 학습한 예측 시각에 끄고, 실시간 감지는 심박을 바로 보내는 암밴드로 2027년에 시험합니다(점선).</span></div></li>
+      <li><div><strong>기상 30분의 실시간 판단은 앱에서 합니다</strong><span>웹에서는 남은 기록으로 같은 규칙을 보여 줍니다. 앱에서는 Apple Watch가 심박과 움직임으로 얕은 잠을 바로 확인합니다.</span></div></li>
       <li><div><strong>시각은 몇 분 틀릴 수 있습니다</strong><span>건강 앱 화면의 그래프에서 옮겨 적었습니다. 단계별 합계는 앱에 표시된 값과 1분 안쪽으로 맞습니다.</span></div></li>
     </ul></div>
   <button class="link" data-act="home">처음으로</button>`;
@@ -827,12 +841,12 @@ function watch() {
 function about() {
   view.innerHTML = `
   <section class="stack" style="padding-top:8px"><h2>이 웹 MVP가 하는 일</h2>
-    <p class="lead">SLEEP:ON은 잠드는 데 30분 넘게 걸리는 사람을 위한 수면 루틴 앱입니다. 핵심은 웨어러블이 읽은 수면 상태에 맞춰 소리를 바꾸는 것이고, 이 웹 버전은 그 흐름을 앱보다 먼저 써 볼 수 있게 만든 것입니다.</p></section>
+    <p class="lead">SLEEP:ON은 잠드는 데 30분 넘게 걸리는 사람을 위한 수면 루틴 앱입니다. 그날 밤 소리를 만들고, 잠들 무렵 줄여서 끄고, 얕은 잠에 깨우며, 아침 기록으로 다음 밤을 고칩니다. 이 웹 버전은 그 흐름을 앱보다 먼저 써 볼 수 있게 만든 것입니다.</p></section>
   <div class="scroll"><table><thead><tr><th>단계</th><th>지금 웹에서</th><th>iPhone·Apple Watch 앱에서</th></tr></thead><tbody>
     <tr><td>오늘 밤 루틴</td><td>네 가지 답과 지난 기록으로 소리, 행동, 취침 시각을 정합니다.</td><td>기록이 쌓이면 개인별 규칙 학습</td></tr>
-    <tr><td>잠든 뒤 소리</td><td>웨어러블이 남긴 실제 기록을 넣으면 단계마다 소리를 바꿉니다. 직접 잘 때는 정해 둔 시간 뒤에 줄이고, 깨면 버튼으로 알립니다.</td><td>Apple Watch의 심박과 움직임으로 자는 동안 바로 판정하고, 사람마다 값을 학습</td></tr>
-    <tr><td>기상</td><td>목표 시각부터 5분에 걸쳐 새소리와 멜로디가 커집니다.</td><td>목표 30분 전부터 얕은 잠을 찾아 깨움</td></tr>
-    <tr><td>아침 체크</td><td>입면 시간과 개운함을 남기면 다음 밤 설정이 바뀌고 사용 전과 비교합니다.</td><td>센서 기록과 함께 14일 전후 비교</td></tr>
+    <tr><td>잠든 뒤 소리</td><td>평소 잠드는 시간이 지나면 줄여서 끄고, 깨면 버튼으로 다시 틉니다. 실제 기록에 같은 규칙을 적용해 볼 수 있습니다.</td><td>Apple Watch 기록을 아침마다 읽어 끄는 시점을 사람마다 학습. 잠드는 순간의 실시간 감지는 암밴드로 2027년 시험</td></tr>
+    <tr><td>기상</td><td>목표 시각부터 5분에 걸쳐 새소리와 멜로디가 커집니다.</td><td>목표 30분 전부터 Apple Watch가 심박·움직임으로 얕은 잠을 찾아 깨움</td></tr>
+    <tr><td>아침 체크</td><td>입면 시간과 개운함을 남기면 다음 밤 설정이 바뀌고 사용 전과 비교합니다.</td><td>건강 앱의 실제 잠든 시각과 함께 14일 전후 비교</td></tr>
   </tbody></table></div>
   <div class="card"><h3>알아 둘 점</h3>
     <ul class="acts">

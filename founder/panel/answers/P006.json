@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "price",
-  "reason": "No auto-charge on the 14-day trial means I'd actually start it, since I can't get burned like last time. But when it ends I'd most likely just stay on the free version or go back to YouTube. Paying monthly for sleep sounds is hard to justify.",
-  "objection": "YouTube sleep music already plays for free, and the free version here also has a timer and no ads. Would the fade-out timing and the resume-after-waking really be worth 4,900 won a month? Also, I doubt the phone can tell exactly when I fell asleep just by sitting next to the bed.",
-  "would_change_my_mind": "If on the 14th day my own records showed I fell asleep noticeably faster (around 10 minutes or more) on SLEEP:ON nights, I might pay for the annual plan at 39,000 won.",
+  "reason": "I'd actually start the 14-day trial since there's no auto-charge, which I like after getting burned once. But when it asks me to pay, I'll probably go back to free YouTube sleep music, because a few minutes' difference won't feel worth 4,900 won a month to me.",
+  "objection": "YouTube sleep music is free and already works well enough. I'm not convinced a fade-out timer and a resume button are worth paying for, and I doubt my phone can really tell when I fell asleep.",
+  "would_change_my_mind": "If the day-14 comparison clearly showed I fell asleep at least 10 minutes faster on the SLEEP:ON nights, I might pay for one month to see if it holds up.",
   "price_too_cheap": 900,
-  "price_cheap": 2000,
+  "price_cheap": 1900,
   "price_expensive": 3900,
-  "price_too_expensive": 6000
+  "price_too_expensive": 6900
 }

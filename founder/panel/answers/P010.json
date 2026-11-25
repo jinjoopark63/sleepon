@@ -1,13 +1,13 @@
 {
   "id": "P010",
-  "buys": true,
-  "purchases_first_month": 1,
+  "buys": false,
+  "purchases_first_month": 0,
   "reason_code": "need",
-  "reason": "My bedtime moves every week with shifts, so a timer that counts from when I put the phone down actually fits me, and the 14-day trial with no auto-charge costs me nothing to try. If the side-by-side shows I fall asleep faster, 4,900 won a month is less than one convenience-store snack run, so I'd pay monthly before committing to the year.",
-  "objection": "The resume-on-tossing thing scares me. If it turns sound back on at 3am when I roll over, or when I'm sleeping in the day after a night shift, it wakes me and I'm done. I'd switch that off on day one, and then I'm not sure the rest is worth paying for over the free 60-minute timer.",
-  "would_change_my_mind": "If the 14-day comparison shows no real difference, or the fade-out cuts the sound while I'm still awake, I'd stay on the free version.",
-  "price_too_cheap": 1000,
-  "price_cheap": 2900,
-  "price_expensive": 6900,
-  "price_too_expensive": 9900
+  "reason": "I'd probably download it for the free 14 days since there's no auto-charge and the auto-replay is off by default, which is what I worry about. But I already play YouTube rain sounds for free with a timer, and I've tried enough sleep apps that I expect the 14-day report to show little difference, so I doubt I'd end up paying.",
+  "objection": "With my shifts changing every week, 7 nights per method is too few and too messy to tell me anything real, and I don't trust phone-on-the-mattress tracking to know when I actually fell asleep after a night shift when I'm sleeping at 9am.",
+  "would_change_my_mind": "If the 14-day report actually showed I fell asleep clearly faster (like 10+ minutes) on the SLEEP:ON nights, I'd pay the yearly 39,000 won.",
+  "price_too_cheap": 900,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
 }

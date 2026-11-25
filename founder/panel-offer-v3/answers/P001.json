@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "YouTube with a 30-minute timer already works for me and costs nothing, and I've never paid for a sleep app. I might grab the free version since it plays without ads, but paying 4,900 won a month isn't happening.",
+  "objection": "The main Pro feature is the one I'm scared of: if I toss around at 3am and it starts playing again, it wakes me up. Then I'm paying to get my sleep broken. Even if I can turn it off, without it Pro is just a fancier timer.",
+  "would_change_my_mind": "If after the free 14 days it showed me I really fall asleep a lot faster, like 15+ minutes, and the 3am resume never once woke me up, I'd think about the yearly plan.",
+  "price_too_cheap": 900,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 5000
+}

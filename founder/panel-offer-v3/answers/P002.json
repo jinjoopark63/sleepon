@@ -1,0 +1,13 @@
+{
+  "id": "P002",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "YouTube plus a 30-minute timer already works for me and costs nothing. I'd maybe grab the free version because it plays with the screen off and no ads, but I've never paid for a sleep app and I don't see why I'd start now.",
+  "objection": "The 'turns the sound back on when you toss' thing is exactly what scares me. With earphones in, if it guesses wrong at 3am it wakes me up, and I'm not paying to find out. Phone motion sensing in bed sounds unreliable too.",
+  "would_change_my_mind": "If the free 14-day comparison showed I actually fall asleep noticeably faster, like 10+ minutes, with the resume feature off and nothing ever waking me up, I might pay the yearly price.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 4900
+}

@@ -1,13 +1,13 @@
 {
   "id": "P014",
-  "buys": true,
-  "purchases_first_month": 1,
-  "reason_code": "need",
-  "reason": "The 14-day side-by-side test with no auto-billing is exactly the proof I'd want, and the 'minutes after I put the phone down' idea fits my bedtime that shifts every week. If my own numbers show I fall asleep faster, I'd pay the 4,900 monthly once to see if it holds, not the yearly plan yet.",
-  "objection": "Can a phone lying on the bed really tell when I fell asleep? If the sleep-detection is off, the comparison is just marketing with a chart on it, and the free version already plays without ads.",
-  "would_change_my_mind": "If the 14-day comparison shows little or no difference, or the app-store reviews say the sleep timing is inaccurate, I stay on the free version.",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably start the free 14-day trial since there's no auto-billing, but I wouldn't pay yet. The app is grading itself with a phone on my nightstand, and with my bedtime moving every week, 7 nights per method feels too noisy to trust, so on $28k I'd just stay on the free version and my YouTube sleep sounds.",
+  "objection": "The 'proof' comes from the same app that wants my money, measured by a phone guessing when I fell asleep from when I put it down. That's not evidence, that's marketing with a chart. I also haven't seen any app-store ratings or outside reviews.",
+  "would_change_my_mind": "If my own 14-day comparison showed a clear gap, like falling asleep 10+ minutes faster on the SLEEP:ON nights, and the app had solid app-store ratings from real users, I'd take the yearly plan.",
   "price_too_cheap": 1000,
-  "price_cheap": 2500,
-  "price_expensive": 5500,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
   "price_too_expensive": 8000
 }

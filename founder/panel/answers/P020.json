@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "trust",
-  "reason": "I'd start the free trial since there's no auto-charge, but I've tried enough sleep apps to expect the 14-day comparison to show little difference, and then the free version with no ads is good enough for me. On my income I won't pay monthly for something that just fades the sound out.",
-  "objection": "Fading out and restarting a sound doesn't sound like it will really get me to sleep faster. It feels like a nicer timer, and I'm not sure a phone on the mattress can tell when I actually fell asleep.",
-  "would_change_my_mind": "If my own 14-day result showed a clear gap, like falling asleep 10 or more minutes faster on SLEEP:ON nights, I'd pay for the yearly plan.",
-  "price_too_cheap": 900,
+  "reason": "I'd probably download it and start the free trial since there's no auto-charge, but I've tried enough sleep apps that I don't expect to end up paying. I already play free sleep sounds on YouTube, and money is tight, so a phone guessing when I fell asleep isn't enough for me to pay every month.",
+  "objection": "Can a phone sitting next to my bed really tell when I fell asleep? If the numbers are a guess, the '14-day comparison' is just marketing with a chart.",
+  "would_change_my_mind": "If the day-14 report showed I fell asleep at least 10 minutes faster on the SLEEP:ON nights, and that matched how I actually felt in the mornings, I'd pay for the 4,900 won monthly plan.",
+  "price_too_cheap": 1000,
   "price_cheap": 2000,
-  "price_expensive": 4000,
-  "price_too_expensive": 6900
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
 }

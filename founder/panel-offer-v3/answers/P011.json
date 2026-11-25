@@ -1,0 +1,13 @@
+{
+  "id": "P011",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "YouTube sleep music with a 30-minute timer already works fine for me and costs nothing. I might grab the free version since it plays with no ads when the screen is off, but I'm not paying 4,900 won a month for a fade-out.",
+  "objection": "I scroll in bed for 30+ minutes anyway, so I doubt the sound is what's keeping me up. Paying to fix the wrong thing feels dumb when YouTube is free.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fall asleep something like 15 minutes faster with the SLEEP:ON mode, I'd think about the yearly plan, as long as it's around 2,000 won a month.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3300,
+  "price_too_expensive": 5500
+}

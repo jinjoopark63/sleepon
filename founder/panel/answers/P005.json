@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "price",
-  "reason": "No auto-charge means I'd actually start the 14-day trial, but when it ends I'd just keep the free version with no ads, or go back to YouTube. On my income, 4,900 won a month for falling asleep a few minutes faster isn't worth it.",
-  "objection": "YouTube sleep music is free, and the free version already plays without ads and turns off on a timer. Even if the chart shows I fall asleep 5 minutes faster, I'm not sure that's worth paying for every month.",
-  "would_change_my_mind": "If the 14-day comparison showed a big gap, like 20+ minutes faster, and a cheap one-time price or a student price around 2,000 won a month.",
+  "reason": "No auto-charge on the trial is nice, so I'd actually start the 14 days without worrying about forgetting to cancel. But on $9,000 a year, even 3,250 won a month for something YouTube sleep music already does for free is hard to justify, so I'd most likely stop at the free version.",
+  "objection": "YouTube sleep music is free and already works well enough for me, and I don't trust that a phone on the bed can really tell when I fell asleep well enough to show a real difference.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fall asleep 15+ minutes faster with it, and there was a student discount around 1,500-2,000 won a month.",
   "price_too_cheap": 500,
   "price_cheap": 1500,
-  "price_expensive": 3000,
+  "price_expensive": 3300,
   "price_too_expensive": 5000
 }

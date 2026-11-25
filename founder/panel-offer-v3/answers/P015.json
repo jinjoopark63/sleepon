@@ -1,0 +1,13 @@
+{
+  "id": "P015",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'm a student and I already pay for Calm, and my sounds and routine are all set up there. I might try the free 14 days since it doesn't auto-charge, but I'm not paying for a second sleep app on my budget.",
+  "objection": "I'd have to drop Calm to make room for this, and I'm not sure a fade-out timer is worth switching for. I also sleep with earphones in, so I don't know if the phone-on-the-bed tracking even works for me.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fall asleep a lot faster than with my usual app, and it had enough sounds that I could cancel Calm and pay for just this one.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
+}

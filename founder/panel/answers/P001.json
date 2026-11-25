@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'd maybe try the free 14 days since there's no auto-charge, but YouTube plus a 30-minute timer already works for me for free, and on my salary I'm not adding a monthly fee for sleep sounds. If the trial is fine I'd just drop to the free version.",
+  "objection": "I already get endless free sleep music and ASMR on YouTube, so paying 4,900 won a month for basically a smarter timer feels like paying for something I already have. And I'd still worry it plays sound again in the middle of the night and wakes me.",
+  "would_change_my_mind": "If after the 14 days my own record clearly showed I fall asleep something like 15+ minutes faster than with YouTube, I might pay the yearly plan.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3500,
+  "price_too_expensive": 5500
+}

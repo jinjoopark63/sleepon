@@ -1,0 +1,13 @@
+{
+  "id": "P005",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "No auto-billing means I'd happily start the 14-day trial, but when it asks me to pay on day 14 I'd pick the free version or go back to YouTube. On $9,000 a year I don't pay monthly for sleep sounds when free ones already work well enough.",
+  "objection": "YouTube sleep music is free and plays all night. I'd be paying for a timer that fades out and a resume button, and the app's own record telling me I fall asleep a few minutes faster isn't proof enough to spend money every month.",
+  "would_change_my_mind": "If after 14 days my record showed a big drop, like falling asleep 20+ minutes faster, and there was a cheap one-time or student price around 2,000 won a month.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 4900
+}

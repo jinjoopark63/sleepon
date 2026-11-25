@@ -1,0 +1,13 @@
+{
+  "id": "P010",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd grab the free 14 days since there's no auto-charge, but I've already tried a bunch of sleep apps and none really changed anything, so I'm not paying until I see it. With my shifts changing, I doubt a morning check-in will tune it right for me in the first month.",
+  "objection": "I've been burned by sleep apps that promise a lot. And if anything makes sound come back by accident at 3am after I finally drop off, I'm deleting it that night.",
+  "would_change_my_mind": "If the day-14 record actually showed me falling asleep 10+ minutes faster, even on my rotating shift nights, I'd pay the 4,900.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2900,
+  "price_expensive": 5900,
+  "price_too_expensive": 9900
+}

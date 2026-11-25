@@ -137,7 +137,7 @@ input[type="range"]{width:100%;accent-color:var(--moon)}
   font-variant-numeric:tabular-nums;text-align:center;margin-top:8px}
 .note{text-align:center;color:var(--sub);font-size:14.5px;min-height:2.9em}
 .trace{border-top:1px solid var(--edge);border-bottom:1px solid var(--edge);padding:8px 0 6px}
-.trace canvas{display:block;width:100%;height:132px}
+.trace canvas{display:block;width:100%;height:150px}
 .trace figcaption{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--sub);flex-wrap:wrap}
 .k{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:-6px}
 .k1{background:var(--glow)} .k2{background:var(--moon)} .ax{margin-left:auto}
@@ -299,7 +299,7 @@ function nextAdjust(n, pool, st) {
 }
 
 /* ---------------------------------------------------------------- a night a watch recorded, run through the same rules */
-const WATCH = { who: '대표자의 웨어러블(Apple Watch) 기록', date: '2026-11-05', target: '08:40',
+const WATCH = { who: '대표자의 웨어러블 기기 기록', date: '2026-11-05', target: '08:40',
   seg: [['core','02:08','02:47'],['awake','02:47','02:49'],['core','02:49','03:04'],['awake','03:04','03:10'],['core','03:10','03:19'],['awake','03:19','03:20'],
     ['core','03:20','03:31'],['awake','03:31','03:33'],['core','03:33','03:51'],['deep','03:51','04:03'],['core','04:03','04:07'],['deep','04:07','04:11'],
     ['core','04:11','04:24'],['rem','04:24','04:56'],['core','04:56','05:08'],['deep','05:08','05:33'],['core','05:33','06:48'],['rem','06:48','07:19'],
@@ -320,7 +320,7 @@ function watchPlan(rec) {
   const seg = rec.seg.map(([k, a, b]) => { let s0 = toMin(a), e0 = toMin(b); while (s0 < prev) s0 += 1440; while (e0 < s0) e0 += 1440; prev = e0; return { k, s: s0, e: e0 }; });
   let tgt = toMin(rec.target); while (tgt < seg[0].s) tgt += 1440;
   const f = fromMin, t0 = seg[0].s - 10, last = seg[seg.length - 1].e, at = m => { const x = seg.find(x => m >= x.s && m < x.e); return x ? x.k : null; };
-  let wakeStart = tgt, why = null;                                                                      // 목표 30분 전부터 얕은 잠을 찾음(앱에서는 Apple Watch가 실시간으로)
+  let wakeStart = tgt, why = null;                                                                      // 목표 30분 전부터 얕은 잠을 찾음(앱에서는 웨어러블 기기가 실시간으로)
   for (let m = tgt - 30; m < tgt; m++) { const k = at(m); if (k === 'core' || k === 'awake' || k === null) { wakeStart = m; why = k === 'core' ? '얕은 잠이라' : '이미 깨어 있어'; break; } }
   const onset = seg.find(x => x.k !== 'awake').s;                       // 아침에 읽는 실제 잠든 시각
   const fadeStart = t0 + LEARN_LAT, offAt = fadeStart + 5;              // 학습된 평소 입면 시간으로 예측
@@ -333,13 +333,11 @@ function watchPlan(rec) {
     if (x.k !== 'awake' || x.s < offAt || x.s >= wakeStart) return;
     if (x.e - x.s <= 2) { skipped++; return; }
     handled++; const m = x.s + 2, end = m + 10;
-    ev.push({ m, key: 'awake', text: '깨서 버튼 한 번(암밴드 연구 모드는 자동). 다시 잠드는 소리(35%)를 틉니다.' });
-    ev.push({ m: m + 5, key: 'off', text: `5분 뒤부터 줄여 ${f(end)}에 끕니다. 이후 아침까지 소리를 켜지 않습니다.` });
-    snd.push([m, 0], [m + .5, .35], [m + 5, .35], [end, 0]); onMin += 10;
+    ev.push({ m, key: 'note', text: `기록상 ${f(x.s)}~${f(x.e)} 깸. 암밴드는 감지해 자동으로 다시 잠드는 소리를 틀고, 스마트폰·웨어러블 기기는 버튼을 누를 때만 틉니다(그래프에서 뺌).` });
     arm.push([m, 0], [m + .5, .35], [x.e + 3, .35], [x.e + 4, 0]);
   });
   const ramp = clamp(tgt - wakeStart, 5, 10), end = Math.max(last, wakeStart + ramp);
-  ev.push({ m: wakeStart, key: 'wake', text: why ? `목표 ${rec.target}의 ${tgt - wakeStart}분 전. 워치가 심박·움직임으로 ${why} 기상 소리를 시작합니다.` : `목표 ${rec.target}. 얕은 잠을 찾지 못해 목표 시각에 기상 소리를 시작합니다.` });
+  ev.push({ m: wakeStart, key: 'wake', text: why ? `목표 ${rec.target}의 ${tgt - wakeStart}분 전. 웨어러블 기기가 심박·움직임으로 ${why} 기상 소리를 시작합니다.` : `목표 ${rec.target}. 얕은 잠을 찾지 못해 목표 시각에 기상 소리를 시작합니다.` });
   snd.push([wakeStart, 0], [end, 0]); arm.push([wakeStart, 0], [end, 0]);
   const tot = {}; seg.forEach(x => { tot[x.k] = (tot[x.k] || 0) + x.e - x.s; });
   const morning = `건강 앱 기록을 읽어 실제 잠든 시각 ${f(onset)}과 예측 ${f(fadeStart)}을 비교(${Math.abs(fadeStart - onset)}분 차이), 다음 밤 끄는 시점을 고칩니다.`;
@@ -466,13 +464,13 @@ function go(v, quiet) {
   V = v; app.dataset.view = v; app.dataset.tone = (v === 'morning' || v === 'done') ? 'dawn' : 'night';
   const tab = v === 'records' ? 'records' : v === 'about' ? 'about' : 'tonight';
   document.querySelectorAll('.tabs a').forEach(a => a.dataset.tab === tab ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
-  ({ home, check, routine, sleep, morning, done, records, about, watch })[v]();
+  ({ home, check, routine, sleep, morning, done, records, about, watch, compare })[v]();
   if (!quiet) view.scrollTop = 0;
 }
 window.addEventListener('hashchange', () => {
   if (sess) return;                                   // a night in progress keeps the screen
   const h = location.hash.replace('#', '');
-  if (h === 'records' || h === 'about' || h === 'watch') go(h); else if (V === 'records' || V === 'about' || V === 'watch') go('home');
+  if (['records', 'about', 'watch', 'compare'].includes(h)) go(h); else if (['records', 'about', 'watch', 'compare'].includes(V)) go('home');
 });
 
 /* ---------------------------------------------------------------- screens */
@@ -480,18 +478,19 @@ function home() {
   const t = S.tonight, last = realNights().slice(-1)[0];
   view.innerHTML = `
   <section class="stack" style="gap:14px;padding-top:14px">
-    <h1>잠들면 끄고,<br>얕은 잠에 깨웁니다</h1>
-    <p class="lead">오늘 밤 소리를 만들어 틀고, 잠들 무렵 줄여서 끕니다. 밤새 틀지 않고, 아침 기록으로 다음 밤 끄는 시점을 고칩니다.</p>
+    <h1>잠든 순간 끄고,<br>깨면 다시 틉니다</h1>
+    <p class="lead">오늘 밤 소리를 만들어 틀고, 심박으로 잠든 순간과 깬 순간을 잡아 끄고 다시 틉니다. 스마트폰만으로도 평소 잠드는 시간을 배워 씁니다.</p>
   </section>
   ${t && t.routine ? `<div class="card"><span class="tag">오늘 밤 루틴 준비됨</span><div class="big">${esc(comboName(t.routine.combo))}</div><div class="why">${t.routine.bed}에 눕고 ${t.routine.wake}에 일어납니다.</div></div>` : ''}
   <div class="stack">
-    <button class="btn" data-act="toWatch">실제 웨어러블 기록으로 보기</button>
+    <button class="btn" data-act="toCompare">실제 기록 비교: 기존 방식 vs SLEEP:ON</button>
+    <button class="btn ghost" data-act="toWatch">실제 기록으로 듣기</button>
     <button class="btn ghost" data-act="${t && t.routine ? 'toRoutine' : 'toCheck'}">${t && t.routine ? '오늘 밤 루틴 보기' : '10초 체크로 오늘 밤 시작'}</button>
   </div>
   <ol class="steps">
     <li><b>1</b><div><strong>오늘 밤 루틴</strong><span>긴장도, 피로도, 일정, 기상 시각으로 소리와 행동과 취침 시각을 정합니다.</span></div></li>
-    <li><b>2</b><div><strong>잠들면 줄이고 끄기</strong><span>평소 잠드는 시간에 맞춰 줄이고 끕니다. 밤새 트는 소리는 꿈 수면(REM)을 줄인다는 연구가 있어 켜 두지 않습니다. 깨면 버튼 한 번으로 다시 틉니다.</span></div></li>
-    <li><b>3</b><div><strong>얕은 잠에 천천히 깨우기</strong><span>기상 30분 전부터 Apple Watch가 심박과 움직임으로 얕은 잠을 찾아 새소리에서 멜로디로 깨웁니다.</span></div></li>
+    <li><b>2</b><div><strong>잠든 순간 끄고, 깨면 다시 틀기</strong><span>심박으로 잠든 순간에 줄이고 끄며(스마트폰만 쓰면 평소 잠드는 시간에), 2분 넘게 깨면 작은 소리로 다시 틉니다. 밤새 트는 소리는 꿈 수면(REM)을 줄인다는 연구가 있어 켜 두지 않습니다.</span></div></li>
+    <li><b>3</b><div><strong>얕은 잠에 천천히 깨우기</strong><span>기상 30분 전부터 웨어러블 기기가 심박과 움직임으로 얕은 잠을 찾아 새소리에서 멜로디로 깨웁니다.</span></div></li>
     <li><b>4</b><div><strong>아침에 배우기</strong><span>건강 앱 기록과 아침 체크로 실제 잠든 시각을 확인해 다음 밤 끄는 시점과 소리를 고칩니다.</span></div></li>
   </ol>
   ${last ? `<div class="card"><h3>지난 기록</h3><div class="big">${last.latency}분 만에 잠듦 · 개운함 ${last.fresh}/5</div></div>` : ''}
@@ -554,7 +553,7 @@ function routine() {
   </div>
   <div class="stack">
     <button class="btn" data-act="startReal">이대로 수면 시작</button>
-    <button class="btn ghost" data-act="toWatch">실제 웨어러블 기록으로 보기</button>
+    <button class="btn ghost" data-act="toWatch">실제 기록으로 듣기</button>
     <button class="link" data-act="recheck">체크 다시 하기</button>
   </div>`;
 }
@@ -564,11 +563,11 @@ const PH = {
   awake: ['깨어 있음 · 소리 재생 중', 0], fading: ['잠듦 추정 · 소리 줄이는 중', 0], silent: ['무음 유지', 0],
   resleep: ['다시 잠드는 중 · 작은 소리', 0], waking: ['깨우는 중', 1],
 };
-function logEv(label, text) { sess.log.push({ x: sess.p, label, text }); const ol = $('#log'); if (ol) ol.innerHTML = sess.log.slice(-4).map(e => `<li><i>${sess.log.indexOf(e) + 1}</i><time>${e.label}</time><span>${esc(e.text)}</span></li>`).join(''); }
+function logEv(label, text) { const K = sess.keys; if (K && K.length > 1) sess.p = clamp((simClock() - K[0][1]) / (K[K.length - 1][1] - K[0][1]), 0, 1); sess.log.push({ x: sess.p, label, text }); const ol = $('#log'); if (ol) ol.innerHTML = sess.log.slice(-4).map(e => `<li><i>${sess.log.indexOf(e) + 1}</i><time>${e.label}</time><span>${esc(e.text)}</span></li>`).join(''); }
 function setPhase(p, note) { sess.phase = p; sess.note = note; paintSleep(); }
 function later(sec, fn) { sess.timers.push(setTimeout(() => { if (sess) fn(); }, sec * 1000)); }
 function clearLater() { sess.timers.forEach(clearTimeout); sess.timers = []; }
-function nowLabel() { if (sess.mode === 'demo') return unrel(simClock()); if (sess.mode === 'watch') return fromMin(simClock()); const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function nowLabel() { if (sess.mode === 'demo') return unrel(simClock()); if (sess.mode === 'watch') return dur(simClock()); const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
 function simClock() { const K = sess.keys, t = (Date.now() - sess.t0) / 1000; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const a = K[i - 1], b = K[i]; return a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); } return K[K.length - 1][1]; }
 
 function startNight(mode) {
@@ -602,6 +601,7 @@ function runDemo(r) {
   const bedR = rel(r.bed); let wakeR = rel(r.wake); if (wakeR <= bedR) wakeR += 1440;
   const mid = Math.round(bedR + (wakeR - bedR) * .47);
   sess.keys = [[0, bedR], [9, bedR + 18], [16, bedR + 23], [26, mid], [33, mid + 8], [43, wakeR - 19], [58, wakeR - 12]]; sess.span = 60000;
+  sess.curve = { snd: [[bedR, 1], [bedR + 18, 1], [bedR + 23, 0], [mid, 0], [mid + .5, .35], [mid + 4, .35], [mid + 8, 0], [wakeR - 12, 0]], wk: [[wakeR - 19, 0], [wakeR - 12, 1]] };
   Sound.ramp(1, 2);
   logEv(unrel(bedR), '수면 시작. 소리를 틉니다.');
   setPhase('awake', '시연입니다. 하룻밤의 흐름을 정해 둔 순서로 보여 줍니다.');
@@ -609,23 +609,23 @@ function runDemo(r) {
   later(16, () => { logEv(unrel(bedR + 23), '무음으로 바꿨습니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
   later(26, () => { Sound.ramp(.35, 1.5); logEv(unrel(mid), '깨서 버튼을 눌렀습니다. 작은 소리를 다시 틉니다.'); setPhase('resleep', '밤중에 깨면 버튼 한 번으로 작은 소리를 다시 틉니다(암밴드 연구 모드는 자동).'); });
   later(33, () => { Sound.ramp(0, 4); logEv(unrel(mid + 8), '정해 둔 시간이 지나 다시 줄여 끕니다.'); setPhase('silent', '아침까지 조용히 둡니다.'); });
-  later(43, () => { beginWake(`기상 30분 안, 얕은 잠 신호(Apple Watch). 목표 ${r.wake}보다 19분 먼저 깨우기 시작합니다.`, 10); });
+  later(43, () => { beginWake(`기상 30분 안, 얕은 잠 신호(웨어러블 기기). 목표 ${r.wake}보다 19분 먼저 깨우기 시작합니다.`, 10); });
   later(75, () => { if (sess && sess.phase === 'waking') endNight(); });
 }
 function runWatch() {
-  const P = watchPlan(WATCH), r = S.tonight && S.tonight.routine, base = r ? r.layers : COMBO['rain+brown'].layers; let T = 0; sess.keys = [];
-  P.ev.forEach((e, i) => { const at = T, R = RESP[e.key]; sess.keys.push([at, e.m]);
+  const { c, ev, snd, wk } = cPlan(); let T = 0; sess.keys = []; sess.curve = { snd, wk }; sess.stage = c;
+  ev.forEach((e, i) => { const at = T, R = CRESP[e.key]; sess.keys.push([at, e.m]);
     later(at, () => {
-      if (e.key === 'wake') { sess.pill = R.pill; beginWake(e.text, 10); return; }
-      if (i === 0) Sound.ramp(1, 2); else { if (R.mix) Sound.morph(R.mix, 1.5); Sound.ramp(R.lv, e.key === 'fade' || e.key === 'off' ? 3.5 : 1.5); Sound.tempo(48); }
-      logEv(fromMin(e.m), e.text); sess.pill = R.pill; setPhase(e.key === 'pre' ? 'awake' : e.key === 'awake' ? 'resleep' : 'silent', R.why); });
-    T += i === 0 ? 4.5 : e.key === 'fade' ? 6 : e.key === 'awake' ? 5 : 5; });
-  sess.keys.push([T + 14, P.wakeStart + P.ramp]); sess.span = (T + 16) * 1000;
-  later(T + 26, () => { if (sess) endNight(); });
+      if (e.key === 'wake') { sess.pill = R.pill; beginWake(e.text, 8); sess.note = R.why; paintSleep(); return; }
+      if (i === 0) Sound.ramp(1, 2); else { Sound.ramp(R.lv, e.key === 'awake' ? 1.5 : 3.5); Sound.tempo(48); }
+      logEv(dur(e.m), e.text); sess.pill = R.pill; setPhase(e.key === 'pre' ? 'awake' : e.key === 'awake' ? 'resleep' : 'silent', R.why); });
+    T += i === 0 ? 4.5 : e.key === 'fade' ? 5 : 3.5; });
+  sess.keys.push([T + 6, c.wake.start + c.wake.ramp + 2]); sess.span = (T + 6) * 1000;
+  later(T + 14, () => { if (sess) endNight(); });
 }
 function tick() {
   if (!sess) return;
-  const el = Date.now() - sess.t0; sess.p = clamp(el / sess.span, 0, 1);
+  const el = Date.now() - sess.t0, K = sess.keys; sess.p = K && K.length > 1 ? clamp((simClock() - K[0][1]) / (K[K.length - 1][1] - K[0][1]), 0, 1) : clamp(el / sess.span, 0, 1);
   if (sess.mode === 'real' && sess.phase !== 'waking' && Date.now() >= sess.wakeAt) beginWake(`목표 시각 ${S.tonight.routine.wake}. 기상 소리를 시작합니다.`, 300);
   sess.trace.push([sess.p, clamp(Sound.level(), 0, 1), clamp(Sound.wakeLevel(), 0, 1)]);
   if (sess.trace.length > 1500) sess.trace = sess.trace.filter((_, i) => i % 2 === 0);
@@ -638,28 +638,47 @@ function draw() {
   const w = c.clientWidth, h = c.clientHeight, d = window.devicePixelRatio || 1;
   if (c.width !== Math.round(w * d)) { c.width = Math.round(w * d); c.height = Math.round(h * d); }
   const g = c.getContext('2d'); g.setTransform(d, 0, 0, d, 0, 0); g.clearRect(0, 0, w, h);
-  const top = 8, bot = h - 22, X = p => 2 + p * (w - 4), Y = v => bot - (bot - top) * v;
+  const top = sess.stage ? 40 : 24, bot = h - 34, X = p => 2 + p * (w - 4), Y = v => bot - (bot - top) * v;
   g.lineWidth = 1; g.strokeStyle = 'rgba(142,160,255,.2)'; g.font = '10px sans-serif'; g.fillStyle = 'rgba(155,164,216,.9)';
   [0, .5, 1].forEach(v => { g.beginPath(); g.moveTo(X(0), Y(v)); g.lineTo(X(1), Y(v)); g.stroke(); });
   const area = (idx, stroke, fill) => { const T = sess.trace; if (!T.length) return;
     g.beginPath(); g.moveTo(X(T[0][0]), bot); T.forEach(s => g.lineTo(X(s[0]), Y(s[idx]))); g.lineTo(X(T[T.length - 1][0]), bot); g.closePath(); g.fillStyle = fill; g.fill();
     g.beginPath(); T.forEach((s, i) => i ? g.lineTo(X(s[0]), Y(s[idx])) : g.moveTo(X(s[0]), Y(s[idx]))); g.strokeStyle = stroke; g.lineWidth = 2; g.stroke(); };
-  area(1, '#8EA0FF', 'rgba(142,160,255,.22)'); area(2, '#FFD88A', 'rgba(255,216,138,.2)');
-  const last = sess.trace[sess.trace.length - 1];
+  if (sess.stage && sess.keys) { const K = sess.keys, a0 = K[0][1], z0 = K[K.length - 1][1], st = sess.stage, now = Math.min(simClock(), z0);
+    let m = 0, v = st.first; g.textAlign = 'left';
+    st.rle.forEach(n => { const m1 = Math.min(m + n / 2, z0); if (m < z0) { const x0 = X((m - a0) / (z0 - a0)), x1 = X((m1 - a0) / (z0 - a0));
+        g.globalAlpha = m < now ? 1 : .25; g.fillStyle = v ? '#9DB4F2' : '#F2A3A3'; g.fillRect(x0, 20, Math.max(.8, x1 - x0), 11); } m += n / 2; v = 1 - v; });
+    g.globalAlpha = 1; }
+  let last = sess.trace[sess.trace.length - 1];
+  if (sess.curve) {                                   // 기록 재생: 계획한 소리 크기를 실제 시각 비율로 그림
+    const K = sess.keys, a = K[0][1], z = K[K.length - 1][1], now = Math.min(simClock(), z), P = m => (m - a) / (z - a);
+    const val = (pts, m) => { if (m <= pts[0][0]) return 0; for (let i = 1; i < pts.length; i++) if (m <= pts[i][0]) { const [m0, v0] = pts[i - 1], [m1, v1] = pts[i]; return v0 + (v1 - v0) * (m - m0) / (m1 - m0 || 1); } return pts[pts.length - 1][1]; };
+    const cut = pts => { const o = pts.filter(([m]) => m >= a && m < now); if (pts[0][0] > a) o.unshift([pts[0][0], 0]); else o.unshift([a, val(pts, a)]); o.push([now, val(pts, now)]); return o.map(([m, v]) => [P(m), v]); };
+    const S1 = cut(sess.curve.snd), S2 = sess.curve.wk[0][0] < now ? cut(sess.curve.wk) : [];
+    sess.trace = S1.map(([x, v]) => [x, v, 0]);
+    const ar = (T, stroke, fill) => { if (T.length < 2) return; g.beginPath(); g.moveTo(X(T[0][0]), bot); T.forEach(([x, v]) => g.lineTo(X(x), Y(v))); g.lineTo(X(T[T.length - 1][0]), bot); g.closePath(); g.fillStyle = fill; g.fill();
+      g.beginPath(); T.forEach(([x, v], i) => i ? g.lineTo(X(x), Y(v)) : g.moveTo(X(x), Y(v))); g.strokeStyle = stroke; g.lineWidth = 2; g.stroke(); };
+    ar(S1, '#8EA0FF', 'rgba(142,160,255,.22)'); ar(S2, '#FFD88A', 'rgba(255,216,138,.2)');
+    const ws = S2.length ? S2[S2.length - 1][1] : 0; last = [P(now), val(sess.curve.snd, now), ws];
+  } else { area(1, '#8EA0FF', 'rgba(142,160,255,.22)'); area(2, '#FFD88A', 'rgba(255,216,138,.2)'); }
   if (last) { g.beginPath(); g.arc(X(last[0]), Y(Math.max(last[1], last[2])), 4, 0, 7); g.fillStyle = last[2] > last[1] ? '#FFD88A' : '#E9ECFF'; g.fill(); }
   g.textAlign = 'center'; g.fillStyle = '#E9ECFF';
-  sess.log.forEach((e, i) => { const x = clamp(X(e.x), 8, w - 8); g.beginPath(); g.moveTo(x, bot); g.lineTo(x, bot + 4); g.strokeStyle = 'rgba(233,236,255,.7)'; g.lineWidth = 1; g.stroke(); g.fillText(String(i + 1), x, bot + 16); });
+  let prev = -99, row = 0;
+  sess.log.forEach(e => { const x = clamp(X(e.x), 16, w - 16); row = x - prev < 36 ? 1 - row : 0; prev = x;
+    g.beginPath(); g.moveTo(x, bot); g.lineTo(x, bot + 4 + row * 12); g.strokeStyle = e.note ? '#3DD6B5' : 'rgba(233,236,255,.7)'; g.lineWidth = 1; g.stroke(); g.fillStyle = e.note ? '#3DD6B5' : '#E9ECFF'; g.fillText(e.label, x, bot + 15 + row * 12); });
+  g.textAlign = 'left'; g.font = '600 11px sans-serif'; g.fillStyle = '#E9ECFF';
+  g.fillText(`소리 조절 ${sess.log.filter(e => !e.note).length}번`, 4, 13);
 }
 function sleep() {
   if (!sess) { go('home'); return; }
   const demo = sess.mode === 'demo', rec = sess.mode === 'watch';
   view.innerHTML = `
   <section class="sleep">
-    <div class="row between"><span class="pill" id="phase"></span><span class="mode">${demo ? '시연 · 정해 둔 신호' : rec ? `웨어러블 기록 재생 · ${+WATCH.date.slice(5, 7)}월 ${+WATCH.date.slice(8)}일` : '타이머 방식'}</span></div>
+    <div class="row between"><span class="pill" id="phase"></span><span class="mode">${demo ? '시연 · 정해 둔 신호' : rec ? '실제 기록 재생 · 자주 깨는 사람(C)' : '기본 모드 · 스마트폰'}</span></div>
     <div class="clock" id="clock">--:--</div>
     <p class="note" id="phaseNote"></p>
     <figure class="trace"><canvas id="night" role="img" aria-label="밤 동안의 소리 크기 변화"></canvas>
-      <figcaption><span class="k k1"></span><span>수면 소리</span><span class="k k2"></span><span>기상 소리</span><span class="ax">${demo ? '하룻밤을 약 1분으로 줄였습니다' : rec ? '기록된 하룻밤을 약 1분으로 줄였습니다' : '누운 시각부터 기상 시각까지'}</span></figcaption></figure>
+      <figcaption><span class="k k1"></span><span>수면 소리</span><span class="k k2"></span><span>기상 소리</span><span class="ax">${rec ? '맨 위 띠는 수면 검사(빨강 깸). 가로는 실제 시간 비율, 조용한 시간은 빨리 넘깁니다' : demo ? '가로는 실제 시각 비율. 조용한 시간은 빨리 넘깁니다' : '누운 시각부터 기상 시각까지'}</span></figcaption></figure>
     <ol class="log" id="log" aria-live="polite"></ol>
     <div class="ctl" id="ctl"></div>
     <label class="vol" for="vol">소리 크기<input id="vol" type="range" min="0" max="100" value="${Math.round(S.settings.volume * 100)}"></label>
@@ -790,62 +809,110 @@ function chart(list, base) {
   return s + `<text x="24" y="${H - 6}" text-anchor="end">분</text></svg>`;
 }
 
+const CRESP = {
+  pre:    { lv: 1,   pill: '잠들기 전 · 오늘 밤 소리',   why: '오늘 밤 만든 소리를 틉니다.' },
+  fade:   { lv: 0,   pill: '잠듦 감지 · 줄이고 끔',      why: '심박으로 잠든 순간을 잡아 3분 확인한 뒤 줄여 끕니다. 밤새 틀지 않습니다.' },
+  wake:   { lv: 0,   pill: '얕은 잠 · 깨우는 중',         why: '새소리에서 멜로디로 조금씩 키웁니다. 기존 알람은 목표 시각에 깊은 잠이어도 울립니다.' },
+  awake:  { lv: .35, pill: '깸 감지 · 다시 잠드는 소리', why: '2분 넘게 깨어 있어 작은 소리를 다시 틉니다.' },
+  off:    { lv: 0,   pill: '다시 잠듦 · 줄이고 끔',      why: '다시 잠든 순간을 잡아 줄여 끕니다.' },
+};
+const dur = m => `${Math.floor(m / 60)}:${pad(Math.round(m % 60))}`;
+function cPlan() {
+  const c = CMP.find(x => x.k === 'C'), ev = [{ m: 0, key: 'pre', text: '불 끄고 오늘 밤 만든 소리를 틉니다.' },
+    { m: c.on + 3, key: 'fade', text: `${dur(c.on)}에 잠듦. 3분 확인 뒤 줄여서 끕니다.` }];
+  c.W.forEach(([a, b]) => { ev.push({ m: a + 2, key: 'awake', text: `${dur(a)}부터 깸. 2분 넘게 깨어 있어 작은 소리를 다시 틉니다.` });
+    ev.push({ m: b + 3, key: 'off', text: `${dur(b)}에 다시 잠듦. 줄여서 끕니다.` }); });
+  ev.push({ m: c.wake.start, key: 'wake', text: `목표 ${dur(c.wake.tgt)}의 30분 전부터 살펴, 얕은 잠이 2분 이어진 ${dur(c.wake.start)}에 기상 소리를 시작합니다.` });
+  const snd = [[0, 1], [c.on + 3, 1], [c.on + 5, 0]];
+  c.W.forEach(([a, b]) => snd.push([a + 2, 0], [a + 2.5, .35], [b + 3, .35], [b + 4, 0])); snd.push([c.xmax, 0]);
+  const wk = [[c.wake.start, 0], [c.wake.start + c.wake.ramp, 1], [c.xmax, 1]];
+  return { c, ev, snd, wk };
+}
 function watch() {
-  const P = watchPlan(WATCH), f = fromMin, d = WATCH.date, W = 360, L = 70, R = 352, X = m => L + (m - P.t0) * (R - L) / (P.end - P.t0);
-  const rows = { awake: 12, rem: 38, core: 64, deep: 90 }, top = 126, bot = 172, Y = v => bot - (bot - top) * v;
-  const poly = pts => pts.map(([m, v]) => X(m).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ');
-  let g = `<svg viewBox="0 0 ${W} 196" role="img" aria-label="웨어러블이 기록한 수면 단계와 바뀐 규칙으로 조절한 소리 크기">`;
-  Object.keys(rows).forEach(k => { g += `<text x="0" y="${rows[k] + 13}">${STAGE[k][0]}</text><line x1="${L}" x2="${R}" y1="${rows[k] + 22}" y2="${rows[k] + 22}" stroke="rgba(142,160,255,.16)"/>`; });
-  P.seg.forEach(x => { g += `<rect x="${X(x.s).toFixed(1)}" y="${rows[x.k]}" width="${Math.max(1.6, X(x.e) - X(x.s)).toFixed(1)}" height="18" rx="3" fill="${STAGE[x.k][1]}"/>`; });
-  g += `<text x="0" y="${top + 16}" class="v">수면 음악</text><text x="0" y="${top + 30}" class="v">소리 크기</text><line x1="${L}" x2="${R}" y1="${top}" y2="${top}" stroke="rgba(142,160,255,.16)"/>`;
-  g += `<polygon points="${X(P.t0)},${bot} ${poly(P.snd)} ${X(P.end)},${bot}" fill="rgba(142,160,255,.3)"/><polyline points="${poly(P.snd)}" fill="none" stroke="#B9C4FF" stroke-width="3.2"/>`;
-  g += `<polyline points="${poly(P.arm.map(([m, v]) => [m, v + .04]))}" fill="none" stroke="#3DD6B5" stroke-width="2" stroke-dasharray="5 4"/>`;
-  g += `<polygon points="${X(P.wakeStart)},${bot} ${poly(P.wk)} ${X(P.end)},${bot}" fill="rgba(255,216,138,.25)"/><polyline points="${poly(P.wk)}" fill="none" stroke="#FFD88A" stroke-width="2"/>`;
-  for (let h = Math.ceil(P.t0 / 60); h * 60 <= P.end; h++) g += `<text x="${X(h * 60)}" y="190" text-anchor="middle">${h % 24}시</text>`;
-  g += '</svg>';
-  const night = P.last - P.first, saved = Math.round((night - P.onMin) / 60 * 10) / 10;
-  const RULES = [['잠들기 전', '오늘 밤 만든 소리', '100%'], [`평소 잠드는 시간(${LEARN_LAT}분)이 지남`, '5분에 걸쳐 줄이고 끔', '0%'],
-    ['잠든 뒤', '끈 채로 둠<br><span class="small">밤새 트는 소음은 꿈 수면을 줄였다는 연구(Basner 2026)</span>', '0%'],
-    ['2분 넘게 깸', '버튼 한 번에 다시 잠드는 소리, 5분 뒤 줄여 끔<br><span class="small">암밴드 연구 모드는 자동</span>', '35%'],
-    ['기상 30분 전 얕은 잠', '기상 소리<br><span class="small">Apple Watch가 심박·움직임으로 실시간 확인</span>', '점점 크게'],
-    ['아침', '건강 앱 기록으로 실제 잠든 시각을 읽어 다음 밤 끄는 시점을 고침', '–']];
+  const { c, ev } = cPlan();
+  const g = cmpChart({ ...c, title: 'C', ticks: [0, 2, 4, 6, 8].map(h => [h * 60, h + '시간']) });
+  const RULES = [['잠들기 전', '오늘 밤 만든 소리', '100%'], ['잠든 순간(심박)', '3분 확인 뒤 줄여서 끔', '0%'],
+    ['2분 넘게 깸', '작은 소리로 다시 틂', '35%'], ['다시 잠듦', '3분 확인 뒤 줄여서 끔', '0%'],
+    ['2분 안의 짧은 깸', '그대로 둠<br><span class="small">깬 기억이 남으려면 평균 약 4분(Winser 외 2013)</span>', '–'],
+    ['기상 30분 전 얕은 잠', '기상 소리<br><span class="small">심박·움직임으로 얕은 잠을 확인(기존 알람은 목표 시각에 울림)</span>', '점점 크게']];
   view.innerHTML = `
-  <section class="stack" style="padding-top:8px"><h2>실제 수면 기록에 바뀐 규칙을 적용하면</h2>
-    <p class="lead">${WATCH.who}입니다. ${+d.slice(5, 7)}월 ${+d.slice(8)}일 밤 기록에 적용하면, 잠들 무렵 줄여서 끄고 밤새 조용히 둔 뒤 얕은 잠에 깨웁니다.</p></section>
-  <figure class="chart">${g}<figcaption>위 네 줄은 웨어러블 기록, 아래 실선은 지금 규칙의 소리 크기, 초록 점선은 2027년에 시험할 암밴드 실시간 모드입니다. 얕은 잠은 Apple 건강 앱의 '코어 수면'입니다.</figcaption></figure>
+  <section class="stack" style="padding-top:8px"><h2>실제 기록으로 듣기: 밤중에 자주 깨는 사람</h2>
+    <p class="lead">공개 데이터의 실제 수면 기록입니다. 25분 만에 잠들고 밤중에 2분 넘게 7번 깼습니다. 같은 밤에 기존 수면 앱·유튜브 음악(30분 끄기 예약)과 SLEEP:ON을 비교합니다.</p></section>
+  <figure class="chart">${g}<figcaption>맨 위 줄은 수면 검사(빨강 깸, 파랑 잠)이고, 가로는 불 끈 뒤 시간입니다. SLEEP:ON은 심박으로 잠든·깬 순간을 잡는 목표 동작입니다. 노란색은 기상 소리(목표 기상 7:40은 예시)입니다.</figcaption></figure>
   <div class="sum">
-    <div class="card"><h3>소리를 켠 시간</h3><div class="n">${P.onMin}<small>분</small></div><div class="why">밤새 트는 방식보다 약 ${saved}시간 짧음</div></div>
-    <div class="card"><h3>잠든 시각 예측</h3><div class="n">${Math.abs(P.fadeStart - P.onset)}<small>분 차이</small></div><div class="why">예측 ${f(P.fadeStart)} · 실제 ${f(P.onset)}</div></div>
+    <div class="card"><h3>깼을 때 다시 틀어 준 횟수</h3><div class="n">${c.W.length}<small>번</small></div><div class="why">기존 방식은 0번 · 짧은 깸 ${c.short}번은 그대로</div></div>
+    <div class="card"><h3>잠든 뒤에도 울린 시간</h3><div class="n">3<small>분</small></div><div class="why">기존 방식은 ${Math.max(0, 30 - c.on)}분</div></div>
   </div>
   <button class="btn" data-act="playWatch">소리와 함께 1분으로 듣기</button>
+  <button class="btn ghost" data-act="toCompare">A·B·C 세 사람 모두 보기</button>
   <div class="scroll"><table><thead><tr><th>언제</th><th>SLEEP:ON 소리</th><th>크기</th></tr></thead><tbody>
-    ${RULES.map(([a, b, c]) => `<tr><td>${a}</td><td>${b}</td><td class="num">${c}</td></tr>`).join('')}
+    ${RULES.map(([a, b, x]) => `<tr><td>${a}</td><td>${b}</td><td class="num">${x}</td></tr>`).join('')}
   </tbody></table></div>
-  <details class="card"><summary>조절한 시각 모두 보기 (${P.ev.length + 1}줄)</summary>
-    <ol class="log all" style="margin-top:10px">${P.ev.map((e, i) => `<li><i>${i + 1}</i><time>${f(e.m)}</time><span>${esc(e.text)}</span></li>`).join('')}<li><i>${P.ev.length + 1}</i><time>아침</time><span>${esc(P.morning)}</span></li></ol></details>
-  <div class="card"><h3>이 기록으로 본 것</h3>
+  <details class="card"><summary>조절한 시각 모두 보기 (${ev.length}줄)</summary>
+    <ol class="log all" style="margin-top:10px">${ev.map((e, i) => `<li><i>${i + 1}</i><time>${dur(e.m)}</time><span>${esc(e.text)}</span></li>`).join('')}</ol></details>
+  <div class="card"><h3>왜 '2분 넘게' 깼을 때만 다시 트나요?</h3>
     <ul class="acts">
-      <li><div><strong>밤중에 깬 ${P.handled + P.skipped}번 가운데 ${P.handled}번에 다시 잠드는 소리를 틉니다</strong><span>2분 안에 다시 잠든 ${P.skipped}번은 넘깁니다. 지금은 버튼으로, 암밴드 연구 모드에서는 자동으로 틉니다.</span></div></li>
-      <li><div><strong>기상 소리는 ${f(P.wakeStart)}에 시작합니다</strong><span>목표 ${WATCH.target}의 30분 전부터 살폈고, 그 시각의 기록이 얕은 잠이었습니다.</span></div></li>
-      <li><div><strong>예측과 실제 잠든 시각이 ${Math.abs(P.fadeStart - P.onset)}분 차이입니다</strong><span>아침마다 이 차이로 다음 밤 끄는 시점을 고칩니다.</span></div></li>
+      <li><div><strong>짧은 깸은 그냥 둡니다</strong><span>잠자는 동안 30초~1분 남짓 깨는 일은 누구에게나 여러 번 있고, 대부분 아침에 기억하지 못합니다. 이 사람도 짧은 깸이 ${c.short}번 있었습니다. 이때 소리를 켜면 오히려 잠을 깨울 수 있습니다.</span></div></li>
+      <li><div><strong>깬 게 기억에 남기 전에 돕습니다</strong><span>밤중에 깬 것을 아침에 기억하려면 평균 약 4분(사람마다 30초~10분) 깨어 있어야 했습니다(Winser 외 2013). 2분은 짧은 깸은 넘기고, 깬 기억이 남기 전에 다시 잠들도록 돕는 시작값입니다.</span></div></li>
+      <li><div><strong>사람마다 고칩니다</strong><span>아침 기록에서 다시 잠들기까지 걸린 시간을 보고 기준을 사람마다 조정합니다.</span></div></li>
     </ul></div>
   <div class="card"><h3>아직 아닌 것</h3>
     <ul class="acts">
-      <li><div><strong>잠드는 순간을 실시간으로 감지하지는 않습니다</strong><span>Apple Watch의 수면 단계는 자는 동안 앱에 실시간으로 주어지지 않고 아침에 건강 앱에 기록됩니다. 그래서 지금은 학습한 예측 시각에 끄고, 실시간 감지는 심박을 바로 보내는 암밴드로 2027년에 시험합니다(점선).</span></div></li>
-      <li><div><strong>기상 30분의 실시간 판단은 앱에서 합니다</strong><span>웹에서는 남은 기록으로 같은 규칙을 보여 줍니다. 앱에서는 Apple Watch가 심박과 움직임으로 얕은 잠을 바로 확인합니다.</span></div></li>
-      <li><div><strong>시각은 몇 분 틀릴 수 있습니다</strong><span>건강 앱 화면의 그래프에서 옮겨 적었습니다. 단계별 합계는 앱에 표시된 값과 1분 안쪽으로 맞습니다.</span></div></li>
+      <li><div><strong>SLEEP:ON 선은 목표 동작입니다</strong><span>수면 검사로 확인한 잠든·깬 순간에 맞췄습니다. 심박으로 이 순간을 얼마나 정확히 잡는지는 2027년 암밴드 시험에서 확인합니다. 스마트폰만 쓰면 평소 잠드는 시간에 끄고, 깨면 버튼으로 다시 틉니다.</span></div></li>
     </ul></div>
-  <button class="link" data-act="home">처음으로</button>`;
+  <p class="small" style="opacity:.75">데이터: Walch 2019, PhysioNet 공개 데이터(스마트워치 심박과 같은 밤 수면 검사).</p>`;
+}
+/* ---------------------------------------------------------------- compare: public data (Walch 2019) */
+const CMP = [{"k":"A","first":0,"rle":[82,6,1,28,1,62],"on":41.0,"W":[],"xmax":90,"short":12},{"k":"B","first":0,"rle":[7,114,1,58],"on":3.5,"W":[],"xmax":90,"short":12},{"k":"C","first":0,"rle":[50,60,12,19,20,6,1,20,7,124,1,4,2,13,7,43,2,3,2,109,1,5,3,2,12,1,2,42,3,55,2,1,1,1,4,1,1,194,1,24,1,2,10,14,1,11,1,13,38],"on":25.0,"W":[[55.0,61.0],[70.5,80.5],[94.0,97.5],[169.5,173.0],[258.0,264.0],[318.0,320.0],[432.0,437.0]],"xmax":480,"short":16}];
+CMP.find(x => x.k === 'C').wake = { tgt: 460, start: 441, ramp: 10 };   // 목표 기상 예시 7:40, 30분 창에서 얕은 잠(N1·N2)이 2분 이어진 첫 시점
+const CMP_TXT = { A: ['A. 잠드는 데 41분 걸린 사람', '깨어 있는데 소리 없음', '11분', '0분', '기존은 잠들기 11분 전에 꺼짐 → SLEEP:ON은 잠든 뒤에 끔'],
+  B: ['B. 3.5분 만에 잠든 사람', '잠든 뒤에도 울린 시간', '26.5분', '3분', '기존은 잠든 뒤 26.5분 더 울림 → SLEEP:ON은 3분 만에 끔'],
+  C: ['C. 밤중에 2분 넘게 7번 깬 사람', '깼을 때 다시 틀어 준 횟수', '0번', '7번', '기존은 깬 7번 모두 이미 꺼진 뒤 → SLEEP:ON은 7번 다시 틀어 줌. 2분 안의 짧은 깸은 그대로 둠'] };
+function cmpChart(c) {
+  const W = 360, L = 64, R = 352, X = m => L + m * (R - L) / c.xmax, rows = [[8, 22], [40, 40], [92, 40]];
+  let g = `<svg viewBox="0 0 ${W} 152" role="img" aria-label="${c.title || CMP_TXT[c.k][0]}: 수면 검사, 기존 방식, SLEEP:ON 소리 크기">`;
+  let m = 0, v = c.first; c.rle.forEach(n => { g += `<rect x="${X(m).toFixed(1)}" y="8" width="${Math.max(.8, X(m + n / 2) - X(m)).toFixed(1)}" height="22" fill="${v ? '#9DB4F2' : '#F2A3A3'}"/>`; m += n / 2; v = 1 - v; });
+  const area = (pts, y0, h, col) => { const p = pts.map(([x, y]) => `${X(Math.min(x, c.xmax)).toFixed(1)},${(y0 + h - h * y).toFixed(1)}`).join(' ');
+    return `<polygon points="${X(0)},${y0 + h} ${p} ${X(c.xmax)},${y0 + h}" fill="${col}" fill-opacity=".25"/><polyline points="${p}" fill="none" stroke="${col}" stroke-width="2.4"/>`; };
+  const old = [[0, 1], [30, 1], [31, 0], [c.xmax, 0]], son = [[0, 1], [c.on + 3, 1], [c.on + 5, 0]];
+  c.W.forEach(([a, b]) => son.push([a + 2, 0], [a + 2.5, .35], [b + 3, .35], [b + 4, 0])); son.push([c.xmax, 0]);
+  g += area(old, 40, 40, '#D06A2A') + area(son, 92, 40, '#14A38B');
+  if (c.wake) { const w = c.wake, gold = '#FFD88A';
+    g += area([[w.tgt, 0], [w.tgt + .5, 1], [c.xmax, 1]], 40, 40, gold) + area([[w.start, 0], [w.start + w.ramp, 1], [c.xmax, 1]], 92, 40, gold);
+    g += `<text x="${X(w.tgt) - 3}" y="52" text-anchor="end" fill="${gold}">알람</text><text x="${X(w.start) - 3}" y="104" text-anchor="end" fill="${gold}">얕은 잠에 깨움</text>`; }
+  g += `<line x1="${X(c.on)}" x2="${X(c.on)}" y1="4" y2="134" stroke="#E9ECFF" stroke-dasharray="3 3" opacity=".6"/><text x="${X(c.on) + 3}" y="44" class="v">잠듦 ${c.onLabel || c.on + '분'}</text>`;
+  g += `<text x="0" y="23">${c.stageLabel || '수면 검사'}</text><text x="0" y="64">기존 방식</text><text x="0" y="116" class="v">SLEEP:ON</text>`;
+  if (c.ticks) { c.ticks.forEach(([t, lab]) => { g += `<text x="${X(t)}" y="148" text-anchor="middle">${lab}</text>`; }); return g + '</svg>'; }
+  const ticks = c.xmax <= 120 ? [0, 30, 60, 90] : [0, 120, 240, 360, 480];
+  ticks.forEach(t => { g += `<text x="${X(t)}" y="148" text-anchor="${t === 0 ? 'start' : t === c.xmax ? 'end' : 'middle'}">${c.xmax <= 120 ? t + '분' : t / 60 + '시간'}</text>`; });
+  return g + '</svg>';
+}
+function compare() {
+  view.innerHTML = `
+  <section class="stack" style="padding-top:8px"><h2>실제 기록으로 본 차이</h2>
+    <p class="lead">기존 수면 앱·유튜브 음악(30분 끄기 예약)과 SLEEP:ON을 다른 사람의 실제 수면 기록에 적용했습니다.</p></section>
+  ${CMP.map(c => { const T = CMP_TXT[c.k]; return `<div class="card"><h3>${T[0]}</h3>
+    <div class="row between" style="margin:6px 0 2px"><span class="small">${T[1]}</span><span><b style="color:#E9925A">기존 ${T[2]}</b> → <b style="color:#3DD6B5">SLEEP:ON ${T[3]}</b></span></div>
+    <figure class="chart" style="margin:6px 0 4px">${cmpChart(c)}</figure>
+    <div class="why">${T[4]}</div></div>`; }).join('')}
+  <div class="card"><h3>31명 전체</h3><div class="why">기존 방식은 26명에게 잠든 뒤 10분 넘게 울렸고(중앙값 19분) 2명은 잠들기 전에 꺼졌습니다. 2분 넘게 깬 67번 중 64번은 소리가 이미 꺼진 뒤였습니다.</div></div>
+  <div class="card"><h3>읽는 법</h3><ul class="acts">
+    <li><div><strong>기존 방식</strong><span>수면 앱이나 유튜브 수면 음악을 틀고 끄기 예약(보통 30분)을 걸어 둔 경우입니다. 잠들었는지와 상관없이 정해 둔 시간에 꺼집니다.</span></div></li>
+    <li><div><strong>빨간 짧은 줄에 반응하지 않는 이유</strong><span>2분 안에 다시 잠든 짧은 깸입니다. 대부분 기억하지 못하고, 깬 것을 기억하려면 평균 약 4분 깨어 있어야 했습니다(Winser 외 2013). 그래서 짧은 깸은 그대로 두고, 2분 넘게 깨어 있을 때 기억에 남기 전에 작은 소리로 다시 틉니다.</span></div></li>
+    <li><div><strong>아직 아닌 것</strong><span>SLEEP:ON 선은 수면 검사로 확인한 순간에 맞춘 목표 동작입니다. 심박으로 이 순간을 얼마나 정확히 잡는지는 2027년 암밴드 시험에서 확인합니다.</span></div></li>
+  </ul></div>
+  <p class="small" style="opacity:.75">데이터: Walch 2019, PhysioNet 공개 데이터(31명의 스마트워치 심박과 같은 밤 수면 검사).</p>
+  <button class="btn ghost" data-act="toWatch">실제 기록으로 듣기</button>`;
 }
 
 function about() {
   view.innerHTML = `
   <section class="stack" style="padding-top:8px"><h2>이 웹 MVP가 하는 일</h2>
     <p class="lead">SLEEP:ON은 잠드는 데 30분 넘게 걸리는 사람을 위한 수면 루틴 앱입니다. 그날 밤 소리를 만들고, 잠들 무렵 줄여서 끄고, 얕은 잠에 깨우며, 아침 기록으로 다음 밤을 고칩니다. 이 웹 버전은 그 흐름을 앱보다 먼저 써 볼 수 있게 만든 것입니다.</p></section>
-  <div class="scroll"><table><thead><tr><th>단계</th><th>지금 웹에서</th><th>iPhone·Apple Watch 앱에서</th></tr></thead><tbody>
+  <div class="scroll"><table><thead><tr><th>단계</th><th>지금 웹에서</th><th>스마트폰·웨어러블 앱에서</th></tr></thead><tbody>
     <tr><td>오늘 밤 루틴</td><td>네 가지 답과 지난 기록으로 소리, 행동, 취침 시각을 정합니다.</td><td>기록이 쌓이면 개인별 규칙 학습</td></tr>
-    <tr><td>잠든 뒤 소리</td><td>평소 잠드는 시간이 지나면 줄여서 끄고, 깨면 버튼으로 다시 틉니다. 실제 기록에 같은 규칙을 적용해 볼 수 있습니다.</td><td>Apple Watch 기록을 아침마다 읽어 끄는 시점을 사람마다 학습. 잠드는 순간의 실시간 감지는 암밴드로 2027년 시험</td></tr>
-    <tr><td>기상</td><td>목표 시각부터 5분에 걸쳐 새소리와 멜로디가 커집니다.</td><td>목표 30분 전부터 Apple Watch가 심박·움직임으로 얕은 잠을 찾아 깨움</td></tr>
+    <tr><td>잠든 뒤 소리</td><td>평소 잠드는 시간이 지나면 줄여서 끄고, 깨면 버튼으로 다시 틉니다. 실제 기록에 같은 규칙을 적용해 볼 수 있습니다.</td><td>웨어러블 기기 기록을 아침마다 읽어 끄는 시점을 사람마다 학습. 잠드는 순간의 실시간 감지는 암밴드로 2027년 시험</td></tr>
+    <tr><td>기상</td><td>목표 시각부터 5분에 걸쳐 새소리와 멜로디가 커집니다.</td><td>목표 30분 전부터 웨어러블 기기가 심박·움직임으로 얕은 잠을 찾아 깨움</td></tr>
     <tr><td>아침 체크</td><td>입면 시간과 개운함을 남기면 다음 밤 설정이 바뀌고 사용 전과 비교합니다.</td><td>건강 앱의 실제 잠든 시각과 함께 14일 전후 비교</td></tr>
   </tbody></table></div>
   <div class="card"><h3>알아 둘 점</h3>
@@ -856,13 +923,13 @@ function about() {
       <li><div><strong>기록은 이 브라우저에만 남습니다</strong><span>가입이 없고 서버로 보내지 않습니다. 다른 기기에서는 보이지 않습니다.</span></div></li>
       <li><div><strong>치료나 진단을 하지 않습니다</strong><span>수면 습관을 돕는 도구입니다. 잠을 못 자는 날이 길게 이어지면 의료기관과 상담해 주세요.</span></div></li>
     </ul></div>
-  <button class="btn ghost" data-act="toWatch">실제 웨어러블 기록으로 보기</button>`;
+  <button class="btn ghost" data-act="toWatch">실제 기록으로 듣기</button>`;
 }
 
 /* ---------------------------------------------------------------- actions */
 const ACT = {
   home() { go('home'); }, toCheck() { if (C) C.step = 0; go('check'); },
-  qNext() { C.step++; go('check'); }, mNext() { M.step = (M.step || 0) + 1; go('morning'); }, mBack() { M.step = Math.max(0, (M.step || 0) - 1); go('morning'); }, qBack() { if (C.step > 0) { C.step--; go('check'); } else go('home'); }, toWatch() { go('watch'); }, playWatch() { startNight('watch'); }, toRoutine() { go('routine'); }, toRecords() { location.hash = 'records'; go('records'); },
+  qNext() { C.step++; go('check'); }, mNext() { M.step = (M.step || 0) + 1; go('morning'); }, mBack() { M.step = Math.max(0, (M.step || 0) - 1); go('morning'); }, qBack() { if (C.step > 0) { C.step--; go('check'); } else go('home'); }, toWatch() { go('watch'); }, toCompare() { go('compare'); }, playWatch() { startNight('watch'); }, toRoutine() { go('routine'); }, toRecords() { location.hash = 'records'; go('records'); },
   set(el) { const k = el.dataset.k; C[k] = +el.dataset.v; go('check', true); },
   makeRoutine() {
     const eT = $('#endTime'), wT = $('#wakeTime'); if (eT) C.end = eT.value || C.end; if (wT) C.wake = wT.value || C.wake;

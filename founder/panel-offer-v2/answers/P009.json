@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably install it for the free 14 days since there's no auto-charge, but I wouldn't pay. It's a new app with no ratings I can check, and my problem is waking at 3-4am, which a one-button resume on the lock screen only kind of helps with. YouTube rain sounds already do most of this for free.",
+  "objection": "There's no outside proof the app-made sound works better than a free YouTube track. A 'my own record' after 14 days could just be one good or bad week, and I don't trust a health-ish claim without real reviews or a study.",
+  "would_change_my_mind": "If my 14-day record clearly showed I fell back asleep faster after the 3-4am wake-ups, and the app store had a few thousand reviews around 4.5 stars saying the same thing.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

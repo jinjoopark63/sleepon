@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "need",
-  "reason": "I'd grab the free 14 days since there's no auto-charge, but on day 14 I'd most likely drop back to the free tier. Free rain sounds and a 30-minute off timer are basically what I already do on YouTube, and I'm trying to cut subscriptions, not add one.",
-  "objection": "A few minutes' difference in my own 14-day record could just be a good week, not the app. And on iPhone I still have to tap a button when I wake up, so the 'resumes where it stopped' part isn't really automatic for me. The automatic version is 2028 and needs an armband I'd have to buy.",
-  "would_change_my_mind": "If the day-14 record showed I was clearly falling asleep a lot faster, like 10+ minutes, every night and not just on a few, I'd pay 4,900 for a month to see if it holds.",
-  "price_too_cheap": 1000,
-  "price_cheap": 2500,
-  "price_expensive": 4900,
-  "price_too_expensive": 7900
+  "reason": "I'd probably start the free 14-day trial since there's no auto-billing, but I already have sleep sounds and YouTube ASMR that work okay, and the free version with an ad-free timer covers most of what I do. I'm cutting subscriptions, not adding them, so unless the 14-day result is a big obvious gap I'm not paying.",
+  "objection": "Falling asleep a few minutes faster according to my phone sitting on the mattress doesn't feel like real proof, and it's not worth another 4,900 won every month. On iPhone, the refund goes through Apple's request page, which I don't trust to actually work.",
+  "would_change_my_mind": "If the day 14 comparison showed I fell asleep something like 15+ minutes faster on the SLEEP:ON nights, I'd pay for the yearly plan.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 3900,
+  "price_too_expensive": 5900
 }

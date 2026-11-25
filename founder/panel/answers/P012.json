@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "trust",
-  "reason": "No auto-charge on the trial is the first thing that makes me willing to download it, so I'd probably try the 14 days. But paying is a different question: there are no ratings or reviews here, and a chart the app makes from my own morning taps isn't proof it works. YouTube sounds plus the free tier would likely be enough for me.",
-  "objection": "The 'you fall asleep X minutes faster' number comes from my own sleepy guesses in a 10-second morning check. That's not evidence, and the auto-resume feature that sounds most useful to me is listed for 2028 with an armband I'd have to buy.",
-  "would_change_my_mind": "A solid app-store rating (4.5+ with a few thousand reviews) or a real study showing people fall asleep faster, plus my own 14-day record showing a clear drop of 10+ minutes.",
+  "reason": "I'd probably start the 14-day trial since there's no auto-charge, but I doubt a phone lying on the bed can really tell when I fell asleep, so a 'you fell asleep 6 minutes faster' result wouldn't convince me to pay. The free version with no ads and a timer already covers what I do with my earphones every night.",
+  "objection": "The comparison is measured by the same app that wants my money, using phone movement, which isn't proof of anything. Also with earphones in I might roll over and not even touch the phone, so I don't trust the numbers.",
+  "would_change_my_mind": "Seeing the 14-day result match my smartwatch data with a clear, consistent difference, plus solid app-store reviews from people who say the measurement was accurate.",
   "price_too_cheap": 1000,
-  "price_cheap": 2500,
-  "price_expensive": 5900,
-  "price_too_expensive": 9900
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
 }

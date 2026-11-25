@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for Calm and I'm used to it, and my AirPods already cut the sound once I'm out. I might grab the free 14 days since there's no auto-pay, but I'm not paying for a second sleep app on my salary.",
+  "objection": "I work shifts and sleep at weird hours, sometimes in the daytime, so I doubt a morning 10-second check can tune anything to me. And the part where it picks up the sound automatically when I wake needs an armband that doesn't come until 2028, so right now it's just a lock-screen button.",
+  "would_change_my_mind": "If the 14-day record actually showed I fall asleep noticeably faster than with Calm, and I could drop Calm so I'm paying for one app, not two.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
+}

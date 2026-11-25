@@ -1,13 +1,13 @@
 {
   "id": "P014",
-  "buys": false,
-  "purchases_first_month": 0,
-  "reason_code": "trust",
-  "reason": "I'd probably download it for the free 14 days since there's no auto-payment, but I wouldn't pay. My bedtime moves every week, so I doubt the app can learn when to turn off, and the free version with 30/60-minute timers is close enough to what I already do with YouTube sleep sounds.",
-  "objection": "The 'fewer minutes to fall asleep' number comes from my own 10-second morning guess, not from any real measurement, so it looks like proof but isn't. I can't see any reviews or app-store ratings yet, and the automatic resume needs an armband that won't come until 2028.",
-  "would_change_my_mind": "If on day 14 my record showed I was falling asleep clearly faster, around 10 minutes or more, and the app had solid 4-star-plus reviews from people with irregular schedules like mine.",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "The 14-day side-by-side test with no auto-billing is exactly the proof I'd want, and the 'minutes after I put the phone down' idea fits my bedtime that shifts every week. If my own numbers show I fall asleep faster, I'd pay the 4,900 monthly once to see if it holds, not the yearly plan yet.",
+  "objection": "Can a phone lying on the bed really tell when I fell asleep? If the sleep-detection is off, the comparison is just marketing with a chart on it, and the free version already plays without ads.",
+  "would_change_my_mind": "If the 14-day comparison shows little or no difference, or the app-store reviews say the sleep timing is inaccurate, I stay on the free version.",
   "price_too_cheap": 1000,
-  "price_cheap": 2000,
-  "price_expensive": 4900,
-  "price_too_expensive": 7900
+  "price_cheap": 2500,
+  "price_expensive": 5500,
+  "price_too_expensive": 8000
 }

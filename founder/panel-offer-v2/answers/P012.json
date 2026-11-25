@@ -1,0 +1,13 @@
+{
+  "id": "P012",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "No auto-charge on the trial is the first thing that makes me willing to download it, so I'd probably try the 14 days. But paying is a different question: there are no ratings or reviews here, and a chart the app makes from my own morning taps isn't proof it works. YouTube sounds plus the free tier would likely be enough for me.",
+  "objection": "The 'you fall asleep X minutes faster' number comes from my own sleepy guesses in a 10-second morning check. That's not evidence, and the auto-resume feature that sounds most useful to me is listed for 2028 with an armband I'd have to buy.",
+  "would_change_my_mind": "A solid app-store rating (4.5+ with a few thousand reviews) or a real study showing people fall asleep faster, plus my own 14-day record showing a clear drop of 10+ minutes.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 5900,
+  "price_too_expensive": 9900
+}

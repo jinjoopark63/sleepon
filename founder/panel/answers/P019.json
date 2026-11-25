@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "habit",
-  "reason": "YouTube plus a 30-minute timer already works for me for free, and on a student budget I'm not paying 4,900 won a month for a smarter version of that. I might try the free 14 days since nothing auto-charges, but I'd most likely end up on the free tier or back on YouTube.",
-  "objection": "The 'sound comes back when you wake up' part is the one I don't trust. It says it's a button on the lock screen, which is fine, but if it ever turns back on by itself at 3am with my earphones in, I'm wide awake and done with it. Also, does the app really know when I've fallen asleep without a watch? I don't have one.",
-  "would_change_my_mind": "If the day-14 record actually showed I fell asleep a lot faster, say 10+ minutes, I might pay the yearly price, but only if it were closer to 20,000 won.",
+  "reason": "YouTube with a 30-minute timer already works for me and costs nothing, and on a student budget I'm not paying 4,900 won a month for a fade-out. I might try the free 14 days since there's no auto-charge, but I'd most likely end up on the free version or back on YouTube.",
+  "objection": "The part where it plays sound again when I move in the night is exactly what I'm afraid of. With earphones in, one toss and turn at 3am and it starts talking in my ear and I'm wide awake. They even say it's still being tested. I'd switch it off, and then Pro is basically just a timer.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fall asleep 15+ minutes faster with the fade, and it cost 2,000 won a month or less, I might pay.",
   "price_too_cheap": 500,
   "price_cheap": 1500,
   "price_expensive": 3000,
-  "price_too_expensive": 4900
+  "price_too_expensive": 5000
 }

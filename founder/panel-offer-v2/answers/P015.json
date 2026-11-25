@@ -1,0 +1,13 @@
+{
+  "id": "P015",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for Calm and fall asleep to it with my earphones in every night, and on a student budget I'm not paying for a second sleep app. I might poke at the free trial since there's no auto-charge, but I'd probably forget the morning check-ins and just go back to what I'm used to.",
+  "objection": "Checking in every morning sounds like homework, and the main thing it does differently, picking the sound back up when I wake, is just one button. I don't see why that's worth another 4,900 won on top of Calm.",
+  "would_change_my_mind": "If it replaced Calm outright with a sound library just as big, for about the same or less, so I could cancel the other one instead of paying for both.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

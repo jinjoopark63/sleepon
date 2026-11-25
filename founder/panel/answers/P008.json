@@ -3,11 +3,11 @@
   "buys": false,
   "purchases_first_month": 0,
   "reason_code": "habit",
-  "reason": "YouTube sleep music with a 30-minute timer already does the job for free, and I've never paid for a sleep app. I might try the free 14 days out of curiosity since there's no auto-billing, but at the end I'd just drop to the free tier or go back to YouTube.",
-  "objection": "My AirPods and the YouTube timer already stop the sound when I fall asleep, so I'm being asked to pay 4,900 won a month for a smarter timer and a resume button on my lock screen. On iPhone the refund just sends me to Apple's refund request screen, which isn't really a guarantee.",
-  "would_change_my_mind": "If my own 14-day record clearly showed I fell asleep 15+ minutes faster than with YouTube, I might pay the yearly plan, but only if it worked that well without a watch.",
-  "price_too_cheap": 900,
-  "price_cheap": 1900,
-  "price_expensive": 3300,
-  "price_too_expensive": 5900
+  "reason": "I put on free YouTube ASMR with a 30-minute timer every night and it works fine for me. I've never paid for a sleep app, and fading the sound out a bit more smoothly isn't worth a monthly fee when my AirPods already stop when I fall asleep.",
+  "objection": "My YouTube setup already does this for free. Twenty minutes of difference in when the sound stops won't change how I sleep, so I'd end up just paying for a timer.",
+  "would_change_my_mind": "If the 14-day trial showed I actually fell asleep a lot faster, like more than 10 minutes, I might think about it, but only if it cost about as much as a coffee for the whole year.",
+  "price_too_cheap": 500,
+  "price_cheap": 1000,
+  "price_expensive": 2500,
+  "price_too_expensive": 4000
 }

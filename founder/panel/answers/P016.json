@@ -2,12 +2,12 @@
   "id": "P016",
   "buys": false,
   "purchases_first_month": 0,
-  "reason": "I already pay for Calm every month and I'm used to it, and I sleep with earbuds that cut the sound anyway, so a second sleep subscription isn't happening on my pay. I might grab the free 14-day trial since there's no auto-charge, but I don't see myself paying after.",
-  "reason_code": "habit",
-  "objection": "I sleep with earbuds, and for earbuds it's just a button, which is basically what I already have. Paying another 4,900 won on top of Calm for a fade-out feels like paying twice for the same thing.",
-  "would_change_my_mind": "If the 14-day comparison showed I actually fall asleep a lot faster after night shifts, and it could replace Calm instead of sitting on top of it.",
-  "price_too_cheap": 1000,
-  "price_cheap": 2000,
-  "price_expensive": 4500,
-  "price_too_expensive": 7000
+  "reason_code": "price",
+  "reason": "I'd probably start the free 14-day comparison since there's no auto-charge, and fading volume with earphones in actually suits my lab hours. But I make almost nothing, and YouTube sleep music already works fine for me, so I don't see myself paying 4,900 won a month or 39,000 won up front on top of the subscriptions I already have.",
+  "objection": "YouTube is free and already puts me to sleep. Saving a few minutes falling asleep isn't worth another monthly charge, and I'm not sure phone-movement tracking even works when my phone is just lying on the bed and I'm wearing earphones in a shared room.",
+  "would_change_my_mind": "If the 14-day report showed a big, obvious gap, like falling asleep 15+ minutes faster or getting back to sleep much quicker after waking at night, and it cost around 2,000 won a month or there was a student price.",
+  "price_too_cheap": 900,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 4900
 }

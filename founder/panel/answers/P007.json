@@ -1,13 +1,13 @@
 {
   "id": "P007",
-  "buys": false,
-  "purchases_first_month": 0,
-  "reason_code": "price",
-  "reason": "I'd probably try the free 14 days since there's no auto-charge, but I'm a student with almost no income and YouTube sleep music already does the job, so paying 4,900 won every month for a fade-out timer isn't happening. I've tried a bunch of sleep apps and none really fixed it.",
-  "objection": "It's still just sleep sounds that fade out. A few minutes' difference on a chart isn't worth a monthly fee when I'm counting every won and free stuff exists.",
-  "would_change_my_mind": "If the 14-day comparison showed I fell asleep a lot faster, like 15+ minutes, and there was a cheap student price around 2,000 won a month or a one-time purchase.",
-  "price_too_cheap": 500,
-  "price_cheap": 1500,
-  "price_expensive": 3000,
-  "price_too_expensive": 5000
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "Timing it from when I put the phone down instead of the clock is exactly what my rotating shifts need, and the 14-day trial has no auto-billing, so trying it costs me nothing. If the day-14 numbers actually show I fall asleep faster after day shifts and night shifts, I'd pay 4,900 for one month first, and I'd think about dropping Calm before stacking another subscription.",
+  "objection": "My bedtime changes every week, and I sleep in the daytime after nights, so I doubt 14 days of alternating is enough for it to learn anything. Phone motion detection probably gets confused when I toss around in a noisy daytime room.",
+  "would_change_my_mind": "",
+  "price_too_cheap": 1000,
+  "price_cheap": 2900,
+  "price_expensive": 5900,
+  "price_too_expensive": 9900
 }

@@ -1,13 +1,13 @@
 {
   "id": "P015",
-  "buys": false,
-  "purchases_first_month": 0,
-  "reason_code": "habit",
-  "reason": "I already pay for Calm and I'm used to it, and on a student budget I'm not paying for a second sleep app on top. I might try the free 14 days since there's no auto-charge, but I sleep with earphones so the smart fade-out and auto-resume mostly don't apply to me, and I doubt I'd switch.",
-  "objection": "With earphones in, I only get the button version, so it's not clear what this does better than the Calm timer I already pay for. I can't afford two subscriptions.",
-  "would_change_my_mind": "If the 14-day comparison clearly showed I fell asleep faster, and it cost less than Calm so I could cancel Calm and replace it instead of adding another subscription.",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "My problem is waking up at 3am after a night shift and lying there, and this is the first sleep app that's actually built for a schedule that moves and for falling back asleep. The free 14-day trial with no auto-charge means I can see my own numbers first, so if it shows a real difference I'd pay the 4,900 monthly, not the yearly, and cut it the month it stops feeling worth it.",
+  "objection": "Can a phone lying on the mattress really tell when I fell asleep or woke up? If the record is just guessing, then the 'comparison' is marketing with a chart on top, and the sound restarting when I roll over might wake me up more.",
+  "would_change_my_mind": "If after 14 days the two columns look about the same, or the sound kicking back in wakes me up, I'm staying on the free version.",
   "price_too_cheap": 1000,
-  "price_cheap": 2000,
-  "price_expensive": 4000,
-  "price_too_expensive": 6000
+  "price_cheap": 2900,
+  "price_expensive": 5900,
+  "price_too_expensive": 8900
 }

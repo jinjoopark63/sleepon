@@ -2,12 +2,12 @@
   "id": "P013",
   "buys": false,
   "purchases_first_month": 0,
-  "reason_code": "habit",
-  "reason": "I'd probably start the free trial since there's no auto-charge and the data stays on my phone, but I've never paid for a sleep app. Free YouTube with a 30-minute timer works well enough, so in a normal month I wouldn't pay after day 14.",
-  "objection": "It says the records never leave my phone, which is good, but I'm still trusting an app that watches my phone and movement all night. And honestly YouTube costs me nothing. Paying 4,900 a month just to fade out the sound and resume it when I wake at 3am is hard to justify on my salary.",
-  "would_change_my_mind": "If the 14-day report clearly showed I fall back asleep a lot faster after waking at 3-4am with the resume button, I'd consider the 39,000 won yearly plan.",
-  "price_too_cheap": 900,
-  "price_cheap": 1900,
-  "price_expensive": 3900,
-  "price_too_expensive": 6900
+  "reason_code": "trust",
+  "reason": "I'd probably start the free 14 days since there's no auto-billing, but on my grad-student money I'm not paying for another sleep app I've seen fail before. The main Pro feature is the thing I'm most afraid of, sound coming back on in the middle of the night, so I'd turn it off and then I'm basically paying for a smarter fade.",
+  "objection": "If the motion detection thinks I'm awake when I'm just rolling over and the sound starts again through my speaker, it wrecks the few hours I get. Phone movement on the mattress feels like a shaky way to judge whether I'm asleep.",
+  "would_change_my_mind": "If the 3-day dry run showed it would only have restarted when I was actually awake, and the day-14 comparison showed I fell asleep clearly faster on SLEEP:ON nights, I'd pay the 3,250-a-month yearly plan.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
 }

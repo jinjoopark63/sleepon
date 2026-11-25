@@ -2,12 +2,12 @@
   "id": "P020",
   "buys": false,
   "purchases_first_month": 0,
-  "reason_code": "trust",
-  "reason": "I'd probably download it and start the free trial since there's no auto-charge, but I've tried enough sleep apps that I don't expect to end up paying. I already play free sleep sounds on YouTube, and money is tight, so a phone guessing when I fell asleep isn't enough for me to pay every month.",
-  "objection": "Can a phone sitting next to my bed really tell when I fell asleep? If the numbers are a guess, the '14-day comparison' is just marketing with a chart.",
-  "would_change_my_mind": "If the day-14 report showed I fell asleep at least 10 minutes faster on the SLEEP:ON nights, and that matched how I actually felt in the mornings, I'd pay for the 4,900 won monthly plan.",
-  "price_too_cheap": 1000,
-  "price_cheap": 2000,
-  "price_expensive": 4900,
-  "price_too_expensive": 8000
+  "reason_code": "habit",
+  "reason": "I'd maybe tap the free 14-day trial since there's no auto-billing, but paying every month for sleep sounds when YouTube with a sleep timer already works for me isn't happening. If I'm honest, I'd probably forget to keep the phone by the bed properly half the nights anyway.",
+  "objection": "YouTube sleep music is free, why pay? The thing that sounds useful is the sound coming back when I wake at 3am, but I doubt phone-movement detection really knows I'm awake versus just rolling over.",
+  "would_change_my_mind": "If the 14-day comparison actually showed me falling back asleep clearly faster after waking, like 15+ minutes saved, I might pay the yearly plan.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 3900,
+  "price_too_expensive": 5900
 }

@@ -1,13 +1,13 @@
 {
   "id": "P006",
-  "buys": false,
-  "purchases_first_month": 0,
-  "reason_code": "price",
-  "reason": "I'd actually start the 14-day trial since there's no auto-charge, which I like after getting burned once. But when it asks me to pay, I'll probably go back to free YouTube sleep music, because a few minutes' difference won't feel worth 4,900 won a month to me.",
-  "objection": "YouTube sleep music is free and already works well enough. I'm not convinced a fade-out timer and a resume button are worth paying for, and I doubt my phone can really tell when I fell asleep.",
-  "would_change_my_mind": "If the day-14 comparison clearly showed I fell asleep at least 10 minutes faster on the SLEEP:ON nights, I might pay for one month to see if it holds up.",
-  "price_too_cheap": 900,
-  "price_cheap": 1900,
-  "price_expensive": 3900,
-  "price_too_expensive": 6900
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "My bedtime moves every day, so a clock-based 30-minute timer never fits me, and the 14-day trial costs nothing and doesn't auto-charge. If the side-by-side numbers show I actually fall asleep faster, 4,900 a month is less than a coffee, so I'd pay. I'd likely start monthly before trusting it with the yearly plan.",
+  "objection": "Can a phone lying next to the pillow really tell when I fell asleep? If I scroll in bed or put the phone down and lie awake, the 'fell asleep' times could be wrong, and then the whole comparison means nothing. Also on iPhone the refund just sends me to Apple's screen, so the refund promise feels weaker for me.",
+  "would_change_my_mind": "If the morning records clearly didn't match what I remember about my nights during the trial, I wouldn't pay.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 6900,
+  "price_too_expensive": 9900
 }

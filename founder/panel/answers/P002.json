@@ -1,13 +1,13 @@
 {
   "id": "P002",
-  "buys": false,
-  "purchases_first_month": 0,
-  "reason_code": "habit",
-  "reason": "YouTube with a 30-minute timer already works for me and costs nothing. I might try the free 14 days since there's no auto-charge, but I can't see myself paying for something I've always gotten free.",
-  "objection": "I sleep with earphones in, so the smart fade and auto-resume mostly aren't for me. I'd just get a button on the lock screen, and that alone isn't worth paying for when YouTube is free and has endless sounds compared to 2 basic ones.",
-  "would_change_my_mind": "If the 14-day comparison actually showed I fall asleep a lot faster than with my usual 30-minute timer, I'd think about the yearly plan, but only at around 2,000 won a month.",
-  "price_too_cheap": 500,
-  "price_cheap": 1500,
-  "price_expensive": 3000,
-  "price_too_expensive": 4900
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "After overtime I lie there 30-40 minutes, and timer apps cut out right when I'm drifting off, so a fade that follows when I put the phone down actually fits my messy schedule. The trial costs nothing and doesn't auto-charge, so I'd try it, and if the 14-day comparison shows I fall asleep faster I'd pay the 4,900 won monthly, not the yearly one.",
+  "objection": "I don't believe a phone on the bed can really tell when I fell asleep or woke up. If the numbers in the comparison are just guesses, the whole 'proof' is meaningless and it's one more sleep app I'll stop opening.",
+  "would_change_my_mind": "If the day-14 comparison shows no real difference, or the sleep times it records are obviously wrong compared to what I remember, I won't pay.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2900,
+  "price_expensive": 6900,
+  "price_too_expensive": 11000
 }

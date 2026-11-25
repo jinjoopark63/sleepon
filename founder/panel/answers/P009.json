@@ -2,12 +2,12 @@
   "id": "P009",
   "buys": false,
   "purchases_first_month": 0,
-  "reason_code": "price",
-  "reason": "I'd probably run the free 14-day comparison since there's no auto-billing, but YouTube rain sounds already cost me nothing, and on my salary I'm not paying monthly unless the numbers are clearly better. Seven nights against seven nights, measured by my phone lying on the bed, won't convince me of much.",
-  "objection": "I don't trust a phone's movement sensor to know when I fell asleep or when I woke at 3am, so the 'proof' at the end could just be noise dressed up as data. And whatever it shows, a free YouTube video plus my phone's own timer gets me most of the way.",
-  "would_change_my_mind": "If my own 14-day result showed a big, obvious drop in how long it takes me to get back to sleep after waking at 3-4am, and the app store reviews said its sleep detection is accurate, I'd pay the 39,000 won yearly plan.",
+  "reason_code": "trust",
+  "reason": "I'd probably run the free 14 days since there's no auto-charge and the daytime-sleep part actually fits my mornings after nights, but I wouldn't pay off the back of numbers measured by a phone lying on the mattress. I already fall asleep to free sounds on YouTube, so the app has to prove itself to me first.",
+  "objection": "Can a phone by the bed really tell when I fell asleep? If I put it down and lie there scrolling thoughts for 40 minutes, or my partner moves, the 'time to fall asleep' comparison could just be noise, and then the whole 14-day report means nothing.",
+  "would_change_my_mind": "If my own 14-day comparison showed a clear gap, and it matched what a watch recorded on the same days (or there were solid app-store reviews from other shift workers saying the same), I'd pay the yearly 39,000.",
   "price_too_cheap": 1000,
-  "price_cheap": 2000,
-  "price_expensive": 4900,
-  "price_too_expensive": 7900
+  "price_cheap": 2500,
+  "price_expensive": 5500,
+  "price_too_expensive": 9900
 }

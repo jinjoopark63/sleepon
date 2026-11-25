@@ -1,0 +1,13 @@
+{
+  "id": "P011",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already fall asleep to free YouTube ASMR with a 30-minute timer every night and it works well enough. I might try the free 14 days out of curiosity since it doesn't auto-charge, but I'm not paying for an app to do what YouTube does for free.",
+  "objection": "YouTube sleep music is free and has way more sounds than 2 basic ones. A fade that's a bit smarter than my timer doesn't feel like a real difference, and I doubt a phone on the bed can tell exactly when I fell asleep.",
+  "would_change_my_mind": "If the 14-day comparison actually showed me falling asleep 10+ minutes faster with my own data, I'd consider the yearly plan, but only if it were closer to 1,000-2,000 won a month.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 5000
+}

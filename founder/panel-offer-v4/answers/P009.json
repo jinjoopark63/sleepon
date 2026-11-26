@@ -1,0 +1,13 @@
+{
+  "id": "P009",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "price",
+  "reason": "I'd probably run the free 14-day comparison since there's no auto-billing, but YouTube rain sounds already cost me nothing, and on my salary I'm not paying monthly unless the numbers are clearly better. Seven nights against seven nights, measured by my phone lying on the bed, won't convince me of much.",
+  "objection": "I don't trust a phone's movement sensor to know when I fell asleep or when I woke at 3am, so the 'proof' at the end could just be noise dressed up as data. And whatever it shows, a free YouTube video plus my phone's own timer gets me most of the way.",
+  "would_change_my_mind": "If my own 14-day result showed a big, obvious drop in how long it takes me to get back to sleep after waking at 3-4am, and the app store reviews said its sleep detection is accurate, I'd pay the 39,000 won yearly plan.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

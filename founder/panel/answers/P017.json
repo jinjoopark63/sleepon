@@ -1,0 +1,13 @@
+{
+  "id": "P017",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably install the free 14-day trial since there's no auto-billing, but I wouldn't pay after it. I don't believe a phone on a shared-room mattress can tell when I actually fell asleep, so the 'proof' at day 14 is the app grading its own homework.",
+  "objection": "The comparison numbers come from the same phone guessing my sleep from when I put it down and how it moves. My roommate moves around, and I lie still with earphones in for ages before sleeping, so I'd trust the chart about as much as an ad. And a new app with no app-store reviews isn't proof of anything.",
+  "would_change_my_mind": "Lots of real app-store reviews from shift workers, or some outside check showing the phone's sleep times match a watch or a sleep study, plus my own 14 days showing a clear difference, not a few minutes.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
+}

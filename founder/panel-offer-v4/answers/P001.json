@@ -1,0 +1,13 @@
+{
+  "id": "P001",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "Free YouTube with a 30-minute timer already does the job for me, and I've never paid for a sleep app. Since the trial has no auto-charge I might try it out of curiosity, but I don't see myself paying 4,900 won a month for slightly smarter fading.",
+  "objection": "I'm glad auto-resume is off by default, but I don't trust a phone sitting next to my bed to really know when I fell asleep just from when I put it down and how much I moved. A few minutes of difference won't feel like it's worth paying for.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fall asleep 10+ minutes faster or stop waking up from the sound cutting off, and it came as a one-time payment of about 10,000 won instead of a subscription.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 5000
+}

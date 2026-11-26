@@ -1,0 +1,13 @@
+{
+  "id": "P003",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "No auto-charge means I'd actually start the 14-day trial, since that's what I always do. But on day 14 I'd drop back to the free version. My AirPods already cut the sound when I fall asleep, and I'm not paying monthly for something I mostly have already.",
+  "objection": "Getting back to sleep at 3am is my real problem, and the resume button is nice, but it's still me pressing a button half-awake. The automatic version needs an armband I'd have to buy, and that's 2028. So what am I paying for right now that's better than free?",
+  "would_change_my_mind": "If my own day-14 record showed I got back to sleep after waking at 3-4am clearly faster, like 15+ minutes, I'd probably pay the 4,900 won for a month to see if it holds up.",
+  "price_too_cheap": 900,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

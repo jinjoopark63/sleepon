@@ -1,0 +1,13 @@
+{
+  "id": "P008",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "YouTube sleep music with a 30-minute timer already does the job for free, and I've never paid for a sleep app. I might try the free 14 days out of curiosity since there's no auto-billing, but at the end I'd just drop to the free tier or go back to YouTube.",
+  "objection": "My AirPods and the YouTube timer already stop the sound when I fall asleep, so I'm being asked to pay 4,900 won a month for a smarter timer and a resume button on my lock screen. On iPhone the refund just sends me to Apple's refund request screen, which isn't really a guarantee.",
+  "would_change_my_mind": "If my own 14-day record clearly showed I fell asleep 15+ minutes faster than with YouTube, I might pay the yearly plan, but only if it worked that well without a watch.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 3300,
+  "price_too_expensive": 5900
+}

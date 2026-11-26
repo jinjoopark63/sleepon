@@ -1,0 +1,13 @@
+{
+  "id": "P020",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably download it and start the free trial since there's no auto-charge, but I've tried enough sleep apps that I don't expect to end up paying. I already play free sleep sounds on YouTube, and money is tight, so a phone guessing when I fell asleep isn't enough for me to pay every month.",
+  "objection": "Can a phone sitting next to my bed really tell when I fell asleep? If the numbers are a guess, the '14-day comparison' is just marketing with a chart.",
+  "would_change_my_mind": "If the day-14 report showed I fell asleep at least 10 minutes faster on the SLEEP:ON nights, and that matched how I actually felt in the mornings, I'd pay for the 4,900 won monthly plan.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
+}

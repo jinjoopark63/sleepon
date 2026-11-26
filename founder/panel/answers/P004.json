@@ -1,0 +1,13 @@
+{
+  "id": "P004",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably start the free 14-day trial since there's no auto-charge, but I wouldn't pay. It's a new app with no ratings I can check, and I don't believe a phone on the mattress can tell when I fell asleep or woke up well enough to make the day-14 comparison mean anything.",
+  "objection": "The resume-on-toss feature is the scary part. If the phone reads me rolling over as being awake and turns the sound back on, it wakes me up in the middle of the few hours I get. The 3-day dry run helps, but I'd just leave it on the lock-screen button, and then I'm basically using a fade-out timer I can get for free.",
+  "would_change_my_mind": "If my own 14-day comparison showed a clear drop in how long it takes me to get back to sleep, and the app had solid app-store reviews from other shift workers saying the auto-resume doesn't fire by mistake.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 5900,
+  "price_too_expensive": 9900
+}

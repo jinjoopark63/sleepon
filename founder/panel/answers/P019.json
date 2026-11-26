@@ -1,0 +1,13 @@
+{
+  "id": "P019",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I already pay for a sleep app, and I've tried enough of them that I don't pay for another one on a promise. The free 14-day trial with no auto-charge I'd probably start, since it says it works for morning sleep after nights, but I'm not paying for two apps.",
+  "objection": "My sleep after a shift change is a mess anyway, so I doubt 14 days of alternating nights will show a clear difference, and a phone on the mattress guessing when I fell asleep in the morning doesn't sound accurate.",
+  "would_change_my_mind": "If the 14-day comparison clearly showed I fell asleep faster after night shifts on the SLEEP:ON days, I'd cancel my current app and switch to the 39,000 won yearly plan.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 5900,
+  "price_too_expensive": 9900
+}

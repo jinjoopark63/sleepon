@@ -1,0 +1,13 @@
+{
+  "id": "P012",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'd grab the 14-day trial for sure since there's no auto-charge, but I always try things and then don't pay. And YouTube rain sounds are already free, so the free version's 30/60-minute timer is probably good enough for me.",
+  "objection": "Two weeks of my messy sleep, with my phone guessing when I fell asleep, can't really prove anything. Even if it says I fell asleep 5 minutes faster, I won't know if that's real or just a number.",
+  "would_change_my_mind": "If the comparison showed I got back to sleep a lot faster after waking at night, like 15+ minutes, on most nights, I'd pay the monthly 4,900 for a month to check.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 3900,
+  "price_too_expensive": 6500
+}

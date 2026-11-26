@@ -1,0 +1,13 @@
+{
+  "id": "P008",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "It's the first one that counts minutes from when I put the phone down instead of a clock time, which is exactly why every other app failed me with my overtime. The trial is free with no auto-charge, so I'd try it, and if the 14-day comparison actually shows I fall asleep faster I'd pay the 4,900 monthly, not the yearly.",
+  "objection": "My weeks are so messy that I doubt 14 days of alternating nights gives a fair comparison, and the phone movement thing might just think I'm asleep when I'm lying still scrolling in my head. I've been burned by apps that promised to learn me before.",
+  "would_change_my_mind": "If the day-14 comparison shows little or no difference, I'd just stay on the free version like the app itself says.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2900,
+  "price_expensive": 6900,
+  "price_too_expensive": 9900
+}

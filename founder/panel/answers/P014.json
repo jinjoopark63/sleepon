@@ -1,0 +1,13 @@
+{
+  "id": "P014",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "No auto-charge on the trial means I'd actually start it, which is rare for me. But when day 14 comes I'd probably just drop to the free version with a 60-minute timer and YouTube rain sounds, like I do with every app.",
+  "objection": "I already get sleep sounds for free. And would a phone lying on the mattress really know when I fell asleep or woke up at 4am, or would it just give me a nice-looking report to sell me the upgrade?",
+  "would_change_my_mind": "If the day-14 comparison showed I got back to sleep clearly faster after waking up at night, like 10+ minutes faster, I'd pay the 4,900 for one month to see if it holds up.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2000,
+  "price_expensive": 4900,
+  "price_too_expensive": 8000
+}

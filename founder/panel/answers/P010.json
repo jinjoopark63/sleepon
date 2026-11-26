@@ -1,0 +1,13 @@
+{
+  "id": "P010",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "I'd maybe start the free 14-day trial since there's no auto-charge, but I've never paid for a sleep app and YouTube with a sleep timer already works well enough. On a grad student budget I'm not paying monthly for a fade-out timer unless it clearly proves itself.",
+  "objection": "Phone-on-the-bed tracking guessing when I fell asleep doesn't sound accurate, so the 'you fell asleep 8 minutes faster' result could just be noise dressed up as proof. My problem is my brain racing after late lab nights, and I doubt a smarter volume fade fixes that.",
+  "would_change_my_mind": "If after the 14 days my own records showed a big, consistent gap, like falling asleep 15+ minutes faster on SLEEP:ON nights, I might pay for the yearly plan once.",
+  "price_too_cheap": 900,
+  "price_cheap": 1900,
+  "price_expensive": 3300,
+  "price_too_expensive": 5500
+}

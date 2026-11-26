@@ -1,0 +1,13 @@
+{
+  "id": "P018",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "I get home after 11pm and my bedtime moves every week, so a fade that counts from when I put the phone down instead of a clock time is exactly what my 30-minute timer gets wrong. The trial doesn't auto-charge, so I'd try it, and if day 14 actually shows I fall asleep faster I'd pay 4,900 monthly, not the yearly one, so I can cut it if it stops feeling worth it.",
+  "objection": "I don't trust that a phone lying on the bed really knows when I fell asleep or woke up, and if the numbers are fuzzy the 'comparison' is just a sales screen. I'm also on iPhone, so 'we'll help you request a refund from Apple' isn't a real refund promise.",
+  "would_change_my_mind": "If the 14-day report shows little or no difference between the two methods, I'd stay on the free version like the app itself says.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

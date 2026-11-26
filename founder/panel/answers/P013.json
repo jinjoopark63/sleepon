@@ -1,0 +1,13 @@
+{
+  "id": "P013",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "trust",
+  "reason": "I'd probably start the free 14 days since there's no auto-billing, but on my grad-student money I'm not paying for another sleep app I've seen fail before. The main Pro feature is the thing I'm most afraid of, sound coming back on in the middle of the night, so I'd turn it off and then I'm basically paying for a smarter fade.",
+  "objection": "If the motion detection thinks I'm awake when I'm just rolling over and the sound starts again through my speaker, it wrecks the few hours I get. Phone movement on the mattress feels like a shaky way to judge whether I'm asleep.",
+  "would_change_my_mind": "If the 3-day dry run showed it would only have restarted when I was actually awake, and the day-14 comparison showed I fell asleep clearly faster on SLEEP:ON nights, I'd pay the 3,250-a-month yearly plan.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 4900,
+  "price_too_expensive": 7900
+}

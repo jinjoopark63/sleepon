@@ -1,0 +1,13 @@
+{
+  "id": "P006",
+  "buys": true,
+  "purchases_first_month": 1,
+  "reason_code": "need",
+  "reason": "My bedtime moves every day, so a clock-based 30-minute timer never fits me, and the 14-day trial costs nothing and doesn't auto-charge. If the side-by-side numbers show I actually fall asleep faster, 4,900 a month is less than a coffee, so I'd pay. I'd likely start monthly before trusting it with the yearly plan.",
+  "objection": "Can a phone lying next to the pillow really tell when I fell asleep? If I scroll in bed or put the phone down and lie awake, the 'fell asleep' times could be wrong, and then the whole comparison means nothing. Also on iPhone the refund just sends me to Apple's screen, so the refund promise feels weaker for me.",
+  "would_change_my_mind": "If the morning records clearly didn't match what I remember about my nights during the trial, I wouldn't pay.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2500,
+  "price_expensive": 6900,
+  "price_too_expensive": 9900
+}

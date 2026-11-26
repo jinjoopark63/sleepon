@@ -1,0 +1,13 @@
+{
+  "id": "P019",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason_code": "habit",
+  "reason": "YouTube plus a 30-minute timer already works for me for free, and on a student budget I'm not paying 4,900 won a month for a smarter version of that. I might try the free 14 days since nothing auto-charges, but I'd most likely end up on the free tier or back on YouTube.",
+  "objection": "The 'sound comes back when you wake up' part is the one I don't trust. It says it's a button on the lock screen, which is fine, but if it ever turns back on by itself at 3am with my earphones in, I'm wide awake and done with it. Also, does the app really know when I've fallen asleep without a watch? I don't have one.",
+  "would_change_my_mind": "If the day-14 record actually showed I fell asleep a lot faster, say 10+ minutes, I might pay the yearly price, but only if it were closer to 20,000 won.",
+  "price_too_cheap": 500,
+  "price_cheap": 1500,
+  "price_expensive": 3000,
+  "price_too_expensive": 4900
+}

@@ -1,0 +1,13 @@
+{
+  "id": "P016",
+  "buys": false,
+  "purchases_first_month": 0,
+  "reason": "I already pay for Calm every month and I'm used to it, and I sleep with earbuds that cut the sound anyway, so a second sleep subscription isn't happening on my pay. I might grab the free 14-day trial since there's no auto-charge, but I don't see myself paying after.",
+  "reason_code": "habit",
+  "objection": "I sleep with earbuds, and for earbuds it's just a button, which is basically what I already have. Paying another 4,900 won on top of Calm for a fade-out feels like paying twice for the same thing.",
+  "would_change_my_mind": "If the 14-day comparison showed I actually fall asleep a lot faster after night shifts, and it could replace Calm instead of sitting on top of it.",
+  "price_too_cheap": 1000,
+  "price_cheap": 2000,
+  "price_expensive": 4500,
+  "price_too_expensive": 7000
+}
